@@ -1,0 +1,12 @@
+{
+  "name": "arc",
+  "description": "Augmented Retrieval Chatbot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm dev:frontend",
+    "dev:frontend": "cd frontend && pnpm dev",
+    "dev:backend": "cd backend && pnpm dev"
+  },
+  "packageManager": "pnpm@10.26.2"
+}

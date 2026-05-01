@@ -140,3 +140,9 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Python
+__pycache__/
+__pycache__
+*venv/
+*venv
