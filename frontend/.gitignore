@@ -41,5 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # AI Agents
+.agents
+skills-lock.json
 AGENTS.md
 CLAUDE.md
