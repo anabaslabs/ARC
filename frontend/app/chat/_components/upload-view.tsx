@@ -14,7 +14,7 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 animate-in fade-in zoom-in duration-500">
+    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 bg-sidebar">
       <div className="space-y-2">
         <h2 className="text-4xl font-bold tracking-tight">Upload & Ask</h2>
         <p className="text-muted-foreground text-lg max-w-md mx-auto">

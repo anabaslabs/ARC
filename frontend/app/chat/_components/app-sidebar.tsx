@@ -71,7 +71,7 @@ export function AppSidebar({
           {!isCollapsed && <span>New Chat</span>}
         </Button>
 
-        <div className="space-y-1">
+        <div className="space-y-1 mt-2">
           {!isCollapsed && (
             <p className="px-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
               Recent Chats

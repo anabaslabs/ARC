@@ -13,7 +13,7 @@ interface RightPanelProps {
 
 export function RightPanel({ files, onClose }: RightPanelProps) {
   return (
-    <aside className="w-64 border-l bg-muted/30 flex flex-col animate-in slide-in-from-right duration-300 h-full">
+    <aside className="flex flex-col h-full w-64 border-l bg-muted dark:bg-muted/30">
       <div className="p-4 flex items-center justify-between h-14">
         <h2 className="text-sm font-semibold">{files.length} Files</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>

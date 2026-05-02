@@ -197,7 +197,7 @@ export default function ChatPage() {
         />
 
         <SidebarInset className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <header className="flex h-14 shrink-0 items-center gap-2 px-4 justify-between">
+          <header className="flex h-14 shrink-0 items-center gap-2 px-4 justify-between bg-sidebar border-b border-border/50 shadow-sm">
             <div className="flex items-center gap-2">
               <h1 className="font-lexend font-bold text-lg">ARC</h1>
             </div>

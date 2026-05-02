@@ -32,7 +32,7 @@ export function FilesView({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
+    <div className="relative flex-1 flex flex-col items-center justify-center p-8 space-y-8 bg-sidebar">
       <h2 className="text-3xl font-bold tracking-tight">Upload & Ask</h2>
 
       <input
