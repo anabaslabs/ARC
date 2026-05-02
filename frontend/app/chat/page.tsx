@@ -61,26 +61,105 @@ interface ChatSession {
   date: string;
 }
 
+interface UploadedFile {
+  name: string;
+  size: number;
+  file?: File;
+}
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+};
+
+const truncateFileName = (name: string, maxLength = 24) => {
+  if (name.length <= maxLength) return name;
+  const extensionIndex = name.lastIndexOf(".");
+  const extension = extensionIndex !== -1 ? name.substring(extensionIndex) : "";
+  const nameWithoutExtension =
+    extensionIndex !== -1 ? name.substring(0, extensionIndex) : name;
+
+  const charsToShow = maxLength - extension.length - 3; // 3 for "..."
+  if (charsToShow <= 0) return name; // Fallback if extension is too long
+
+  const frontChars = Math.ceil(charsToShow * 0.7);
+  const backChars = Math.floor(charsToShow * 0.3);
+
+  return (
+    nameWithoutExtension.substring(0, frontChars) +
+    "..." +
+    nameWithoutExtension.substring(nameWithoutExtension.length - backChars) +
+    extension
+  );
+};
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ChatPage() {
   const [view, setView] = React.useState<ViewState>("upload");
   const [chats, setChats] = React.useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = React.useState<string | null>(null);
-  const [uploadedFiles, setUploadedFiles] = React.useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [inputValue, setInputValue] = React.useState("");
   const [isRightPanelOpen, setIsRightPanelOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [isAsking, setIsAsking] = React.useState(false);
 
-  const handleUpload = async (files: FileList | null) => {
+  const handleFileSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_FILE_COUNT = 6;
+
+    const currentFilesCount = uploadedFiles.length;
+    const selectedFiles = Array.from(files);
+
+    if (currentFilesCount + selectedFiles.length > MAX_FILE_COUNT) {
+      alert(`You can only upload a maximum of ${MAX_FILE_COUNT} files.`);
+      return;
+    }
+
+    const filteredFiles = selectedFiles.filter((f) => {
+      if (f.size > MAX_FILE_SIZE) {
+        alert(`File "${f.name}" is too large. Maximum size is 5MB.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (filteredFiles.length === 0) return;
+
+    const newFiles = filteredFiles.map((f) => ({
+      name: f.name,
+      size: f.size,
+      file: f,
+    }));
+
+    setUploadedFiles((prev) => [...prev, ...newFiles]);
+    setView("files");
+  };
+
+  const handleRemoveFile = (index: number) => {
+    if (isUploading) return;
+    const newFiles = [...uploadedFiles];
+    newFiles.splice(index, 1);
+    setUploadedFiles(newFiles);
+    if (newFiles.length === 0) setView("upload");
+  };
+
+  const startChat = async () => {
+    if (uploadedFiles.length === 0 || isUploading) return;
 
     setIsUploading(true);
     const formData = new FormData();
-    Array.from(files).forEach((file) => {
-      formData.append("files", file);
+    uploadedFiles.forEach((f) => {
+      if (f.file) {
+        formData.append("files", f.file);
+      }
     });
 
     try {
@@ -91,35 +170,29 @@ export default function ChatPage() {
 
       if (!response.ok) throw new Error("Upload failed");
 
-      const data = await response.json();
-      const fileNames = data.details.map((d: any) => d.source);
-      setUploadedFiles(fileNames);
-      setView("files");
+      // Once uploaded and processed, we can start the chat session
+      const newChatId = Date.now().toString();
+      const newChat: ChatSession = {
+        id: newChatId,
+        title: `Analysis ${new Date().toLocaleTimeString()}`,
+        date: "Just now",
+      };
+      setChats([newChat, ...chats]);
+      setActiveChatId(newChatId);
+      setView("chat");
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: "I've processed your files. How can I help you today?",
+        },
+      ]);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload files. Please try again.");
+      alert("Failed to process files. Please try again.");
     } finally {
       setIsUploading(false);
     }
-  };
-
-  const startChat = () => {
-    const newChatId = Date.now().toString();
-    const newChat: ChatSession = {
-      id: newChatId,
-      title: `Analysis ${new Date().toLocaleTimeString()}`,
-      date: "Just now",
-    };
-    setChats([newChat, ...chats]);
-    setActiveChatId(newChatId);
-    setView("chat");
-    setMessages([
-      {
-        id: "1",
-        role: "assistant",
-        content: "I've processed your files. How can I help you today?",
-      },
-    ]);
   };
 
   const handleSendMessage = async () => {
@@ -164,6 +237,15 @@ export default function ChatPage() {
     }
   };
 
+  const handleNewChat = () => {
+    setView("upload");
+    setUploadedFiles([]);
+    setMessages([]);
+    setActiveChatId(null);
+    setInputValue("");
+    setIsRightPanelOpen(false);
+  };
+
   const deleteAllChats = async () => {
     try {
       const response = await fetch(`${API_URL}/delete`, {
@@ -193,11 +275,11 @@ export default function ChatPage() {
             setActiveChatId(id);
             setView("chat");
           }}
-          onNewChat={() => setView("upload")}
+          onNewChat={handleNewChat}
           onDeleteAll={deleteAllChats}
         />
 
-        <SidebarInset className="flex flex-col flex-1 overflow-hidden">
+        <SidebarInset className="flex flex-col flex-1 min-h-0 overflow-hidden">
           <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 justify-between">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
@@ -216,16 +298,21 @@ export default function ChatPage() {
             )}
           </header>
 
-          <main className="flex flex-1 overflow-hidden relative">
-            <div className="flex-1 flex flex-col min-w-0">
+          <main className="flex flex-1 min-h-0 overflow-hidden relative">
+            <div className="flex-1 flex flex-col min-h-0">
               {view === "upload" && (
-                <UploadView onUpload={handleUpload} isUploading={isUploading} />
+                <UploadView
+                  onUpload={handleFileSelect}
+                  isUploading={isUploading}
+                />
               )}
               {view === "files" && (
                 <FilesView
                   files={uploadedFiles}
-                  onAddFile={() => setView("upload")}
+                  onAddFile={handleFileSelect}
                   onStartChat={startChat}
+                  onRemoveFile={handleRemoveFile}
+                  isUploading={isUploading}
                 />
               )}
               {view === "chat" && (
@@ -262,7 +349,9 @@ export default function ChatPage() {
                         className="flex items-center gap-2 p-2 rounded-md hover:bg-accent text-sm group"
                       >
                         <IconFileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate flex-1">{file}</span>
+                        <span className="truncate flex-1" title={file.name}>
+                          {truncateFileName(file.name, 20)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -394,7 +483,7 @@ function UploadView({
         className="hidden"
         ref={fileInputRef}
         onChange={(e) => onUpload(e.target.files)}
-        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
+        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json,.png,.jpg,.jpeg"
       />
 
       <Card
@@ -411,13 +500,14 @@ function UploadView({
             <IconUpload className="size-8 text-primary" />
           )}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-2">
           <p className="font-semibold text-lg">
             {isUploading ? "Uploading..." : "Click or drag files here"}
           </p>
-          <p className="text-sm text-muted-foreground">
-            PDF, DOCX, TXT or CSV up to 10MB
-          </p>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>PDF, DOCX, XLSX, CSV, PPTX, TXT, MD, JSON, PNG, JPG</p>
+            <p>(Up to 6 files • Max 5MB per file)</p>
+          </div>
         </div>
       </Card>
     </div>
@@ -428,52 +518,103 @@ function FilesView({
   files,
   onAddFile,
   onStartChat,
+  onRemoveFile,
+  isUploading,
 }: {
-  files: string[];
-  onAddFile: () => void;
+  files: UploadedFile[];
+  onAddFile: (files: FileList | null) => void;
   onStartChat: () => void;
+  onRemoveFile: (index: number) => void;
+  isUploading: boolean;
 }) {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
       <h2 className="text-3xl font-bold tracking-tight">Upload & Ask</h2>
 
-      <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <input
+        type="file"
+        multiple
+        className="hidden"
+        ref={fileInputRef}
+        onChange={(e) => onAddFile(e.target.files)}
+        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json,.png,.jpg,.jpeg"
+      />
+
+      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {files.map((file, i) => (
-          <Card key={i} className="p-4 flex items-center gap-3 relative group">
-            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-              <IconFileText size={20} />
+          <Card
+            key={i}
+            className={cn(
+              "p-4 flex flex-col items-center justify-center gap-3 relative group text-center h-36 transition-all",
+              isUploading && "opacity-50 grayscale-[0.5]"
+            )}
+          >
+            <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+              <IconFileText size={24} />
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium truncate">{file}</p>
-              <p className="text-[10px] text-muted-foreground">
-                Ready to index
+            <div className="min-w-0 w-full px-2">
+              <p className="text-sm font-semibold truncate" title={file.name}>
+                {truncateFileName(file.name, 28)}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-medium">
+                {formatFileSize(file.size)}
               </p>
             </div>
-            <Badge
-              variant="secondary"
-              className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              {i + 1}
-            </Badge>
+            {!isUploading && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-1.5 right-1.5 size-6 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                onClick={() => onRemoveFile(i)}
+              >
+                <IconX className="size-3.5" />
+              </Button>
+            )}
           </Card>
         ))}
-        <Button
-          variant="outline"
-          onClick={onAddFile}
-          className="h-[72px] border-dashed flex flex-col gap-1 items-center justify-center"
-        >
-          <IconPlus size={20} />
-          <span className="text-xs">Add more</span>
-        </Button>
+        {!isUploading && files.length < 6 && (
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            className="h-36 border-2 border-dashed flex flex-col gap-2 items-center justify-center hover:bg-accent/50 transition-all"
+          >
+            <IconPlus size={24} />
+            <span className="text-xs font-medium">Add more</span>
+          </Button>
+        )}
       </div>
 
-      <Button size="lg" className="px-8 gap-2 group" onClick={onStartChat}>
-        <span>Analyze Documents</span>
-        <IconArrowRight
-          size={18}
-          className="group-hover:translate-x-1 transition-transform"
-        />
-      </Button>
+      <div className="flex flex-col items-center gap-4">
+        <Button
+          size="lg"
+          className="px-8 gap-2 group min-w-[200px]"
+          onClick={onStartChat}
+          disabled={isUploading}
+        >
+          {isUploading ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <span>Analyze Documents</span>
+              <IconArrowRight
+                size={18}
+                className="group-hover:translate-x-1 transition-transform"
+              />
+            </>
+          )}
+        </Button>
+
+        {isUploading && (
+          <p className="text-xs text-muted-foreground animate-pulse">
+            Please wait while we process your documents...
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -494,14 +635,23 @@ function ChatView({
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    const scrollToBottom = () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({
+          top: scrollRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    };
+
+    // Use a small timeout to ensure the DOM has updated
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <ScrollArea className="flex-1 p-4 md:p-6" ref={scrollRef}>
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <ScrollArea className="flex-1 min-h-0 p-4 md:p-6" ref={scrollRef}>
         <div className="max-w-3xl mx-auto space-y-6 py-4">
           {messages.map((message) => (
             <div
