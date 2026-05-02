@@ -40,10 +40,10 @@ export default function RootLayout({
         jetbrainsMono.variable,
         "font-mono",
         "h-full",
-        "antialiased",
+        "antialiased"
       )}
     >
-      <body className="flex flex-col min-h-full">{children}</body>
+      <body className="flex flex-col min-h-full dark">{children}</body>
     </html>
   );
 }
