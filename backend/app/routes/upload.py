@@ -1,6 +1,6 @@
 import os
 
-from app.config import ALLOWED_TYPES, MAX_FILE_SIZE, UPLOAD_DIR
+from app.config import ALLOWED_TYPES, MAX_FILE_COUNT, MAX_FILE_SIZE, UPLOAD_DIR
 from app.rag.pipeline import process_file
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
@@ -11,6 +11,9 @@ router = APIRouter()
 async def upload_files(files: list[UploadFile] = File(...)) -> dict:
     results = []
     total_chunks = 0
+    if len(files) > MAX_FILE_COUNT:
+        raise HTTPException(400, f"Maximum {MAX_FILE_COUNT} files allowed")
+
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
     for file in files:

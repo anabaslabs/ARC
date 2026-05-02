@@ -1,4 +1,5 @@
 import os
+import time
 import shutil
 
 from app.rag.embedder import embeddings
@@ -10,7 +11,10 @@ PATH = "data/vectorstores/default_index"
 
 def get_vectorstore() -> FAISS | None:
     if os.path.exists(PATH):
-        return FAISS.load_local(PATH, embeddings, allow_dangerous_deserialization=True)
+        try:
+            return FAISS.load_local(PATH, embeddings, allow_dangerous_deserialization=True)
+        except Exception:
+            return None
     return None
 
 
@@ -20,10 +24,17 @@ def add_documents(chunks: list[Document]) -> None:
 
     store = get_vectorstore()
 
-    if store:
-        store.add_documents(chunks)
-    else:
-        store = FAISS.from_documents(chunks, embeddings)
+    batch_size = 50
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i : i + batch_size]
+        
+        if store:
+            store.add_documents(batch)
+        else:
+            store = FAISS.from_documents(batch, embeddings)
+
+        if i + batch_size < len(chunks):
+            time.sleep(1)
 
     os.makedirs(os.path.dirname(PATH), exist_ok=True)
     store.save_local(PATH)

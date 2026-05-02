@@ -13,12 +13,16 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 EMBED_MODEL = "models/gemini-embedding-001"
 CHAT_MODEL = "gemini-2.5-flash-lite"
 
+TOP_K = 10
+
 CHUNK_SIZE = 1500
 CHUNK_OVERLAP = 200
 
-TOP_K = 5
+MAX_FILE_COUNT = 6
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
-MAX_FILE_SIZE = 50 * 1024 * 1024
+UPLOAD_DIR = "data/uploads"
+
 ALLOWED_TYPES = {
     "pdf",
     "docx",
@@ -32,7 +36,6 @@ ALLOWED_TYPES = {
     "jpg",
     "jpeg",
 }
-UPLOAD_DIR = "data/uploads"
 
 PROMPT = (
     "You are ARC, a helpful document assistant. "
