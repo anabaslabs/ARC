@@ -5,8 +5,6 @@ import {
   IconPlus,
   IconTrash,
   IconUpload,
-  IconSend,
-  IconPaperclip,
   IconFiles,
   IconX,
   IconArrowRight,
@@ -14,12 +12,12 @@ import {
   IconRobot,
   IconUser,
   IconMessage,
+  IconSend2,
+  IconRotateRectangle,
 } from "@tabler/icons-react";
-
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -31,6 +29,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   AlertDialog,
@@ -44,7 +43,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 type ViewState = "upload" | "files" | "chat";
@@ -280,18 +278,15 @@ export default function ChatPage() {
         />
 
         <SidebarInset className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 justify-between">
+          <header className="flex h-14 shrink-0 items-center gap-2 px-4 justify-between">
             <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <h1 className="text-sm font-semibold">Upload & Ask</h1>
+              <h1 className="font-lexend font-bold text-lg">ARC</h1>
             </div>
-            {view === "chat" && (
+            {view === "chat" && !isRightPanelOpen && (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
-                className={cn(isRightPanelOpen && "bg-accent")}
+                onClick={() => setIsRightPanelOpen(true)}
               >
                 <IconFiles className="h-4 w-4" />
               </Button>
@@ -325,41 +320,49 @@ export default function ChatPage() {
                 />
               )}
             </div>
-
-            {/* Right Panel for Files */}
-            {view === "chat" && isRightPanelOpen && (
-              <aside className="w-64 border-l bg-muted/30 flex flex-col animate-in slide-in-from-right duration-300">
-                <div className="p-4 border-b flex items-center justify-between">
-                  <h2 className="text-sm font-semibold">
-                    {uploadedFiles.length} Files
-                  </h2>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsRightPanelOpen(false)}
-                  >
-                    <IconX className="h-4 w-4" />
-                  </Button>
-                </div>
-                <ScrollArea className="flex-1 p-2">
-                  <div className="space-y-1">
-                    {uploadedFiles.map((file, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-2 p-2 rounded-md hover:bg-accent text-sm group"
-                      >
-                        <IconFileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate flex-1" title={file.name}>
-                          {truncateFileName(file.name, 20)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </aside>
-            )}
           </main>
         </SidebarInset>
+
+        {/* Right Panel for Files */}
+        {view === "chat" && isRightPanelOpen && (
+          <aside className="w-64 border-l bg-muted/30 flex flex-col animate-in slide-in-from-right duration-300 h-full">
+            <div className="p-4 flex items-center justify-between h-14">
+              <h2 className="text-sm font-semibold">
+                {uploadedFiles.length} Files
+              </h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsRightPanelOpen(false)}
+              >
+                <IconX className="h-4 w-4" />
+              </Button>
+            </div>
+            <ScrollArea className="flex-1 p-2">
+              <div className="space-y-1">
+                {uploadedFiles.map((file, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 p-2 rounded-md"
+                  >
+                    <IconFileText className="h-5 w-5 text-muted-foreground shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className="text-sm font-medium truncate"
+                        title={file.name}
+                      >
+                        {truncateFileName(file.name, 20)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </aside>
+        )}
       </div>
     </SidebarProvider>
   );
@@ -378,30 +381,41 @@ function AppSidebar({
   onNewChat: () => void;
   onDeleteAll: () => void;
 }) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
   return (
-    <Sidebar variant="sidebar" className="border-r">
-      <SidebarHeader className="h-14 border-b flex items-center px-4">
-        <div className="flex items-center gap-2 font-bold">
-          <div className="size-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
-            <IconRobot size={14} />
-          </div>
-          <span>ARC RAG</span>
-        </div>
+    <Sidebar variant="sidebar" collapsible="icon" className="border-r">
+      <SidebarHeader
+        className={cn(
+          "h-14 flex flex-row items-center px-4",
+          isCollapsed && "justify-center px-0"
+        )}
+      >
+        <SidebarTrigger
+          className={cn("size-9 [&_svg]:size-5", !isCollapsed && "-ml-1")}
+        />
       </SidebarHeader>
       <SidebarContent className="p-2 space-y-4">
         <Button
           onClick={onNewChat}
           variant="outline"
-          className="w-full justify-start gap-2 h-9 border-dashed"
+          className={cn(
+            "w-full justify-start gap-2 h-9 border-dashed",
+            isCollapsed && "justify-center p-0"
+          )}
+          title={isCollapsed ? "New Chat" : undefined}
         >
-          <IconPlus size={16} />
-          <span>New Chat</span>
+          <IconPlus size={isCollapsed ? 20 : 16} />
+          {!isCollapsed && <span>New Chat</span>}
         </Button>
 
         <div className="space-y-1">
-          <p className="px-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            Recent Chats
-          </p>
+          {!isCollapsed && (
+            <p className="px-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              Recent Chats
+            </p>
+          )}
           <SidebarMenu>
             {chats.map((chat) => (
               <SidebarMenuItem key={chat.id}>
@@ -409,13 +423,17 @@ function AppSidebar({
                   isActive={activeChatId === chat.id}
                   onClick={() => onChatSelect(chat.id)}
                   className="rounded-md"
+                  tooltip={isCollapsed ? chat.title : undefined}
                 >
-                  <IconMessage size={14} className="opacity-70" />
-                  <span>{chat.title}</span>
+                  <IconMessage
+                    size={isCollapsed ? 18 : 14}
+                    className="opacity-70"
+                  />
+                  {!isCollapsed && <span>{chat.title}</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {chats.length === 0 && (
+            {chats.length === 0 && !isCollapsed && (
               <p className="px-2 py-4 text-xs text-muted-foreground text-center italic">
                 No chats yet
               </p>
@@ -428,11 +446,15 @@ function AppSidebar({
           <AlertDialogTrigger asChild>
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 h-9"
+              className={cn(
+                "w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 h-9",
+                isCollapsed && "justify-center p-0"
+              )}
               disabled={chats.length === 0}
+              title={isCollapsed ? "Delete All" : undefined}
             >
-              <IconTrash size={16} />
-              <span>Delete All</span>
+              <IconTrash size={isCollapsed ? 18 : 16} />
+              {!isCollapsed && <span>Delete All</span>}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -447,7 +469,8 @@ function AppSidebar({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={onDeleteAll}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                variant="destructive"
+                className="rounded-md"
               >
                 Delete All
               </AlertDialogAction>
@@ -495,7 +518,7 @@ function UploadView({
       >
         <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
           {isUploading ? (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            <IconRotateRectangle className="size-8 text-primary animate-spin" />
           ) : (
             <IconUpload className="size-8 text-primary" />
           )}
@@ -595,7 +618,7 @@ function FilesView({
         >
           {isUploading ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+              <IconRotateRectangle className="size-4 animate-spin" />
               <span>Processing...</span>
             </>
           ) : (
@@ -633,6 +656,7 @@ function ChatView({
   onSendMessage: () => void;
 }) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     const scrollToBottom = () => {
@@ -648,6 +672,13 @@ function ChatView({
     const timeoutId = setTimeout(scrollToBottom, 100);
     return () => clearTimeout(timeoutId);
   }, [messages]);
+
+  React.useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [inputValue]);
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -690,41 +721,39 @@ function ChatView({
         </div>
       </ScrollArea>
 
-      <div className="p-4 border-t bg-background/80 backdrop-blur-sm">
+      <div className="p-4 bg-background/80 backdrop-blur-sm">
         <div className="max-w-3xl mx-auto relative group">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8 text-muted-foreground hover:text-primary"
-            >
-              <IconPaperclip size={18} />
-            </Button>
-          </div>
-          <Input
+          <Textarea
+            ref={textareaRef}
             value={inputValue}
             onChange={(e) => onInputChange(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onSendMessage()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                onSendMessage();
+              }
+            }}
             placeholder="Ask a question about your documents..."
-            className="pl-12 pr-12 h-12 rounded-xl border-2 focus-visible:ring-0 focus-visible:border-primary/50 transition-all"
+            className="pl-4 pr-12 min-h-[56px] max-h-40 py-4 rounded-md border-2 focus-visible:ring-0 focus-visible:border-primary/50 transition-all resize-none overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full"
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+          <div className="absolute right-2 bottom-3">
             <Button
               size="icon"
-              className="size-8 rounded-lg"
+              className="size-8 rounded-md"
               disabled={!inputValue.trim() || isAsking}
               onClick={onSendMessage}
             >
               {isAsking ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground" />
+                <IconRotateRectangle className="size-4 animate-spin" />
               ) : (
-                <IconSend size={16} />
+                <IconSend2 size={22} />
               )}
             </Button>
           </div>
         </div>
         <p className="text-[10px] text-muted-foreground text-center mt-2">
-          AI can make mistakes. Check important info.
+          <span className="font-bungee">ARC</span> is AI and can make mistakes.
+          Please double-check important info.
         </p>
       </div>
     </div>

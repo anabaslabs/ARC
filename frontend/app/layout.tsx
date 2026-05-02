@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Bungee, Lexend, JetBrains_Mono } from "next/font/google";
+import { Lexend, JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
-
-const bungee = Bungee({
-  variable: "--font-bungee",
-  subsets: ["latin"],
-  weight: ["400"],
-});
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -35,7 +30,6 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        bungee.variable,
         lexend.variable,
         jetbrainsMono.variable,
         "font-mono",
@@ -43,7 +37,9 @@ export default function RootLayout({
         "antialiased"
       )}
     >
-      <body className="flex flex-col min-h-full dark">{children}</body>
+      <body className="flex flex-col min-h-full dark">
+        <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      </body>
     </html>
   );
 }
