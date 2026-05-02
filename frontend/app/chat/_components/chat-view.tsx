@@ -7,6 +7,7 @@ import {
   IconRotateRectangle,
   IconSend2,
 } from "@tabler/icons-react";
+import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -86,7 +87,7 @@ export function ChatView({
                     : "bg-card border rounded-tl-none"
                 )}
               >
-                {message.content}
+                <Markdown content={message.content} />
               </div>
             </div>
           ))}
