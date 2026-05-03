@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { IconFilesFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -301,6 +302,14 @@ export default function ChatPage() {
         <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-4 shadow-sm">
             <div className="flex items-center gap-2">
+              <Image
+                src="/logo.png"
+                alt="ARC Logo"
+                height={512}
+                width={512}
+                priority
+                className="size-7 object-contain"
+              />
               <h1 className="font-lexend text-lg font-bold">ARC</h1>
             </div>
             {view === "chat" && !isRightPanelOpen && (

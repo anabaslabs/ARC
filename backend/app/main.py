@@ -6,6 +6,9 @@ from app.routes.upload import router as upload_router
 from app.config import APP_NAME, APP_VERSION
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 app = FastAPI(
     title=APP_NAME,
@@ -31,3 +34,11 @@ app.include_router(chats_router)
 @app.get("/")
 async def root():
     return {"name": APP_NAME, "version": APP_VERSION, "status": "ok"}
+
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(os.path.join("app", "static", "favicon.ico"))
