@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Lexend, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -9,7 +10,7 @@ import "./globals.css";
 const lexend = Lexend({
   variable: "--font-lexend",
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  weight: ["700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -19,8 +20,24 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://arc.anabaslabs.com"),
   title: "ARC",
   description: "Augmented Retrieval Chatbot",
+  robots: "index, follow",
+  creator: "Anabas Labs",
+  authors: [
+    { name: "Anabas Labs", url: "https://anabaslabs.com" },
+    { name: "Saptarshi Roy", url: "https://hirishi.in" },
+    { name: "Krishnendu Das", url: "https://itskdhere.com" },
+  ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
+  alternates: {
+    canonical: "https://arc.anabaslabs.com",
+  },
 };
 
 export default function RootLayout({
@@ -50,6 +67,7 @@ export default function RootLayout({
           <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
