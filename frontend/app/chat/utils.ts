@@ -74,3 +74,8 @@ export const truncateFileName = (name: string, maxLength = 24) => {
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export const MAX_FILE_COUNT = 6;
+
+export const getUserId = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("arc_user_id");
+};

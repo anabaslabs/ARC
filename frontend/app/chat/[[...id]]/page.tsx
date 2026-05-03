@@ -17,7 +17,7 @@ import { FilesView } from "../_components/files-view";
 import { ChatView } from "../_components/chat-view";
 import { RightPanel } from "../_components/right-panel";
 import { ViewState, Message, ChatSession, UploadedFile } from "../types";
-import { MAX_FILE_SIZE, MAX_FILE_COUNT } from "../utils";
+import { MAX_FILE_SIZE, MAX_FILE_COUNT, getUserId } from "../utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -25,10 +25,12 @@ function ChatInterface({
   initialChatId,
   chats,
   setChats,
+  userId,
 }: {
   initialChatId?: string;
   chats: ChatSession[];
   setChats: React.Dispatch<React.SetStateAction<ChatSession[]>>;
+  userId: string;
 }) {
   const router = useRouter();
 
@@ -118,6 +120,9 @@ function ChatInterface({
     try {
       const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
+        headers: {
+          "X-User-ID": userId,
+        },
         body: formData,
       });
 
@@ -192,7 +197,10 @@ function ChatInterface({
     try {
       const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-User-ID": userId,
+        },
         body: JSON.stringify({
           question: inputValue,
           session_id: initialChatId || "default_index",
@@ -312,11 +320,37 @@ export default function ChatPage() {
   const initialChatId = (params.id as string[] | undefined)?.[0];
 
   const [chats, setChats] = React.useState<ChatSession[]>([]);
+  const [userId, setUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    const initAuth = async () => {
+      let id = getUserId();
+      if (!id) {
+        try {
+          const res = await fetch(`${API_URL}/auth/guest`);
+          if (!res.ok) throw new Error("Failed to get guest ID");
+          const data = await res.json();
+          id = data.user_id;
+          if (id) localStorage.setItem("arc_user_id", id);
+        } catch (error) {
+          console.error("Auth error:", error);
+          toast.error("Failed to initialize session. Please refresh.");
+          return;
+        }
+      }
+      setUserId(id);
+    };
+    initAuth();
+  }, []);
+
+  React.useEffect(() => {
+    if (!userId) return;
+
     const fetchChats = async () => {
       try {
-        const response = await fetch(`${API_URL}/chats`);
+        const response = await fetch(`${API_URL}/chats`, {
+          headers: { "X-User-ID": userId },
+        });
         if (response.ok) {
           const data = await response.json();
           setChats(data.chats || []);
@@ -326,7 +360,7 @@ export default function ChatPage() {
       }
     };
     fetchChats();
-  }, []);
+  }, [userId]);
 
   const handleChatSelect = (id: string) => {
     router.push(`/chat/${id}`);
@@ -340,6 +374,7 @@ export default function ChatPage() {
     try {
       const response = await fetch(`${API_URL}/delete/${id}`, {
         method: "DELETE",
+        headers: { "X-User-ID": userId || "" },
       });
 
       if (!response.ok) throw new Error("Failed to delete chat");
@@ -361,6 +396,7 @@ export default function ChatPage() {
     try {
       const response = await fetch(`${API_URL}/clear`, {
         method: "DELETE",
+        headers: { "X-User-ID": userId || "" },
       });
 
       if (!response.ok) throw new Error("Failed to clear index");
@@ -390,12 +426,19 @@ export default function ChatPage() {
           onDeleteChat={deleteChat}
         />
 
-        <ChatInterface
-          key={initialChatId || "new"}
-          initialChatId={initialChatId}
-          chats={chats}
-          setChats={setChats}
-        />
+        {userId ? (
+          <ChatInterface
+            key={initialChatId || "new"}
+            initialChatId={initialChatId}
+            chats={chats}
+            setChats={setChats}
+            userId={userId}
+          />
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-muted-foreground animate-pulse">Initializing session...</p>
+          </div>
+        )}
       </div>
     </SidebarProvider>
   );

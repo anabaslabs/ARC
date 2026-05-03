@@ -1,3 +1,4 @@
+from app.routes.auth import router as auth_router
 from app.routes.ask import router as ask_router
 from app.routes.delete import router as delete_router
 from app.routes.clear import router as clear_router
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(ask_router)
 app.include_router(upload_router)
 app.include_router(delete_router)

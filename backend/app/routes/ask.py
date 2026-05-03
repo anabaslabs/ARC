@@ -1,6 +1,7 @@
 from app.config import CHAT_MODEL, GOOGLE_API_KEY, PROMPT, TOP_K
 from app.rag.vectorstore import get_vectorstore
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.deps import get_user_id
 from langchain_core.messages import HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
@@ -20,8 +21,9 @@ class AskResponse(BaseModel):
 
 
 @router.post("/ask")
-async def ask(body: AskRequest) -> AskResponse:
-    store = get_vectorstore(body.session_id)
+async def ask(body: AskRequest, user_id: str = Depends(get_user_id)) -> AskResponse:
+    prefixed_session_id = f"{user_id}_{body.session_id}"
+    store = get_vectorstore(prefixed_session_id)
     docs = store.similarity_search(body.question, k=TOP_K)
 
     if not docs:

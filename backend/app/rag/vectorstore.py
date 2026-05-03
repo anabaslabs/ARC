@@ -52,22 +52,27 @@ def delete_vectorstore(session_id: str) -> bool:
         return False
 
 
-def delete_all_vectorstores() -> bool:
+def delete_user_vectorstores(user_id: str) -> bool:
     try:
         index = _get_index()
         stats = index.describe_index_stats()
         namespaces = list(stats.namespaces.keys())
         failed: list[str] = []
-        for ns in namespaces:
+        prefix = f"{user_id}_"
+        
+        target_namespaces = [ns for ns in namespaces if ns.startswith(prefix)]
+        
+        for ns in target_namespaces:
             try:
                 index.delete(delete_all=True, namespace=ns)
             except Exception as e:
                 print(f"Failed to delete namespace '{ns}': {e}")
                 failed.append(ns)
+        
         if failed:
-            print(f"delete_all_vectorstores: {len(failed)}/{len(namespaces)} namespaces failed: {failed}")
+            print(f"delete_user_vectorstores: {len(failed)}/{len(target_namespaces)} namespaces failed: {failed}")
             return False
         return True
     except Exception as e:
-        print(f"delete_all_vectorstores: unexpected error: {e}")
+        print(f"delete_user_vectorstores: unexpected error: {e}")
         return False
