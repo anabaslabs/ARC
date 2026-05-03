@@ -5,13 +5,14 @@ import { IconFiles } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { AppSidebar } from "./_components/app-sidebar";
-import { UploadView } from "./_components/upload-view";
-import { FilesView } from "./_components/files-view";
-import { ChatView } from "./_components/chat-view";
-import { RightPanel } from "./_components/right-panel";
+import { useParams, useRouter } from "next/navigation";
+import { AppSidebar } from "../_components/app-sidebar";
+import { UploadView } from "../_components/upload-view";
+import { FilesView } from "../_components/files-view";
+import { ChatView } from "../_components/chat-view";
+import { RightPanel } from "../_components/right-panel";
 
-import { ViewState, Message, ChatSession, UploadedFile } from "./types";
+import { ViewState, Message, ChatSession, UploadedFile } from "../types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -25,6 +26,44 @@ export default function ChatPage() {
   const [isRightPanelOpen, setIsRightPanelOpen] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
   const [isAsking, setIsAsking] = React.useState(false);
+
+  const router = useRouter();
+  const params = useParams();
+  
+  // Fetch chats on initial mount
+  React.useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await fetch(`${API_URL}/chats`);
+        if (response.ok) {
+          const data = await response.json();
+          setChats(data.chats || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chats:", error);
+      }
+    };
+    fetchChats();
+  }, []);
+
+  // Sync state with URL
+  React.useEffect(() => {
+    const chatId = params.id?.[0];
+    if (chatId) {
+      setActiveChatId(chatId);
+      setView("chat");
+      const savedMessages = localStorage.getItem(`arc_messages_${chatId}`);
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages));
+      } else {
+        setMessages([]);
+      }
+    } else {
+      setActiveChatId(null);
+      setView("upload");
+      setMessages([]);
+    }
+  }, [params.id]);
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -72,12 +111,14 @@ export default function ChatPage() {
     if (uploadedFiles.length === 0 || isUploading) return;
 
     setIsUploading(true);
+    const newChatId = Date.now().toString();
     const formData = new FormData();
     uploadedFiles.forEach((f) => {
       if (f.file) {
         formData.append("files", f.file);
       }
     });
+    formData.append("session_id", newChatId);
 
     try {
       const response = await fetch(`${API_URL}/upload`, {
@@ -88,22 +129,24 @@ export default function ChatPage() {
       if (!response.ok) throw new Error("Upload failed");
 
       // Once uploaded and processed, we can start the chat session
-      const newChatId = Date.now().toString();
       const newChat: ChatSession = {
         id: newChatId,
         title: `Analysis ${new Date().toLocaleTimeString()}`,
         date: "Just now",
       };
       setChats([newChat, ...chats]);
-      setActiveChatId(newChatId);
-      setView("chat");
-      setMessages([
+      const initMessages: Message[] = [
         {
           id: "1",
           role: "assistant",
           content: "I've processed your files. How can I help you today?",
         },
-      ]);
+      ];
+      setMessages(initMessages);
+      localStorage.setItem(`arc_messages_${newChatId}`, JSON.stringify(initMessages));
+      setActiveChatId(newChatId);
+      setView("chat");
+      window.history.pushState(null, "", `/chat/${newChatId}`);
     } catch (error) {
       console.error("Upload error:", error);
       alert("Failed to process files. Please try again.");
@@ -121,7 +164,9 @@ export default function ChatPage() {
       content: inputValue,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(newMessages));
     setInputValue("");
     setIsAsking(true);
 
@@ -129,7 +174,10 @@ export default function ChatPage() {
       const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: inputValue }),
+        body: JSON.stringify({ 
+          question: inputValue,
+          session_id: activeChatId || "default_index"
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to get answer");
@@ -140,7 +188,9 @@ export default function ChatPage() {
         role: "assistant",
         content: data.answer,
       };
-      setMessages((prev) => [...prev, aiMessage]);
+      const updatedMessages = [...newMessages, aiMessage];
+      setMessages(updatedMessages);
+      localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(updatedMessages));
     } catch (error) {
       console.error("Ask error:", error);
       const errorMessage: Message = {
@@ -148,7 +198,9 @@ export default function ChatPage() {
         role: "assistant",
         content: "Sorry, I encountered an error while processing your request.",
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      const updatedMessages = [...newMessages, errorMessage];
+      setMessages(updatedMessages);
+      localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(updatedMessages));
     } finally {
       setIsAsking(false);
     }
@@ -156,29 +208,55 @@ export default function ChatPage() {
 
   const handleNewChat = () => {
     setView("upload");
+    setActiveChatId(null);
     setUploadedFiles([]);
     setMessages([]);
-    setActiveChatId(null);
     setInputValue("");
     setIsRightPanelOpen(false);
+    window.history.pushState(null, "", '/chat');
   };
 
   const deleteAllChats = async () => {
     try {
-      const response = await fetch(`${API_URL}/delete`, {
+      const response = await fetch(`${API_URL}/clear`, {
         method: "DELETE",
       });
 
-      if (!response.ok) throw new Error("Failed to delete index");
+      if (!response.ok) throw new Error("Failed to clear index");
 
-      setChats([]);
-      setActiveChatId(null);
       setView("upload");
+      setActiveChatId(null);
+      setChats([]);
       setUploadedFiles([]);
       setMessages([]);
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("arc_messages_")) {
+          localStorage.removeItem(key);
+        }
+      });
+      window.history.pushState(null, "", '/chat');
+    } catch (error) {
+      console.error("Clear error:", error);
+      alert("Failed to clear backend data. Index might still be there.");
+    }
+  };
+
+  const deleteChat = async (id: string) => {
+    try {
+      const response = await fetch(`${API_URL}/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete chat");
+
+      setChats((prev) => prev.filter((c) => c.id !== id));
+      localStorage.removeItem(`arc_messages_${id}`);
+      if (activeChatId === id) {
+        handleNewChat();
+      }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Failed to delete backend data. Index might still be there.");
+      alert("Failed to delete chat data.");
     }
   };
 
@@ -191,9 +269,18 @@ export default function ChatPage() {
           onChatSelect={(id) => {
             setActiveChatId(id);
             setView("chat");
+            const savedMessages = localStorage.getItem(`arc_messages_${id}`);
+            if (savedMessages) {
+              setMessages(JSON.parse(savedMessages));
+            } else {
+              setMessages([]);
+            }
+            setUploadedFiles([]);
+            window.history.pushState(null, "", `/chat/${id}`);
           }}
           onNewChat={handleNewChat}
           onDeleteAll={deleteAllChats}
+          onDeleteChat={deleteChat}
         />
 
         <SidebarInset className="flex flex-col flex-1 min-h-0 overflow-hidden">

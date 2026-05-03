@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuAction,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -33,6 +34,7 @@ interface AppSidebarProps {
   onChatSelect: (id: string) => void;
   onNewChat: () => void;
   onDeleteAll: () => void;
+  onDeleteChat: (id: string) => void;
 }
 
 export function AppSidebar({
@@ -41,6 +43,7 @@ export function AppSidebar({
   onChatSelect,
   onNewChat,
   onDeleteAll,
+  onDeleteChat,
 }: AppSidebarProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
@@ -95,6 +98,18 @@ export function AppSidebar({
                     </div>
                   )}
                 </SidebarMenuButton>
+                {!isCollapsed && (
+                  <SidebarMenuAction
+                    className="size-7 hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover/menu-item:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteChat(chat.id);
+                    }}
+                  >
+                    <IconTrash size={14} />
+                    <span className="sr-only">Delete Chat</span>
+                  </SidebarMenuAction>
+                )}
               </SidebarMenuItem>
             ))}
             {chats.length === 0 && !isCollapsed && (
