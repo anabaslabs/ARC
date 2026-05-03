@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, DragEvent } from "react";
 import { IconUpload, IconRotateRectangle } from "@tabler/icons-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,33 @@ interface UploadViewProps {
 
 export function UploadView({ onUpload, isUploading }: UploadViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isUploading) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (
+      !isUploading &&
+      e.dataTransfer.files &&
+      e.dataTransfer.files.length > 0
+    ) {
+      onUpload(e.dataTransfer.files);
+    }
+  };
 
   return (
     <div className="bg-sidebar flex flex-1 flex-col items-center justify-center space-y-6 p-8 text-center">
@@ -27,15 +54,22 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
         multiple
         className="hidden"
         ref={fileInputRef}
-        onChange={(e) => onUpload(e.target.files)}
+        onChange={(e) => {
+          onUpload(e.target.files);
+          e.target.value = "";
+        }}
         accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
       />
 
       <Card
         onClick={() => !isUploading && fileInputRef.current?.click()}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         className={cn(
           "hover:bg-accent/50 group flex aspect-2/1 w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 border-2 border-dashed transition-all",
-          isUploading && "cursor-not-allowed opacity-50"
+          isUploading && "cursor-not-allowed opacity-50",
+          isDragging && "border-primary bg-primary/5"
         )}
       >
         <div className="bg-primary/10 flex size-16 items-center justify-center transition-transform group-hover:scale-110">

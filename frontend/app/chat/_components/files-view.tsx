@@ -43,14 +43,17 @@ export function FilesView({
         multiple
         className="hidden"
         ref={fileInputRef}
-        onChange={(e) => onAddFile(e.target.files)}
+        onChange={(e) => {
+          onAddFile(e.target.files);
+          e.target.value = "";
+        }}
         accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
       />
 
       <div className="grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {files.map((file, i) => (
           <Card
-            key={i}
+            key={`${file.name}-${file.size}`}
             className={cn(
               "group relative flex h-36 flex-col items-center justify-center gap-3 p-4 text-center transition-all",
               isUploading && "opacity-50 grayscale-[0.5]"

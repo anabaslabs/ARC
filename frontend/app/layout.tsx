@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lexend, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+          <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
     </html>
