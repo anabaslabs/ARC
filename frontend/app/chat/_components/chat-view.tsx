@@ -199,6 +199,16 @@ export function ChatView({
               </div>
             </div>
           ))}
+          {isAsking && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full flex-col items-start duration-300">
+              <div className="flex items-center gap-2 rounded-xl bg-transparent px-4 py-2.5 text-sm leading-relaxed">
+                <IconRotateRectangle className="text-primary size-4 animate-spin" />
+                <span className="text-muted-foreground animate-pulse font-medium">
+                  ARC is thinking...
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </ScrollArea>
 
