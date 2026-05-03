@@ -17,7 +17,12 @@ import { FilesView } from "../_components/files-view";
 import { ChatView } from "../_components/chat-view";
 import { RightPanel } from "../_components/right-panel";
 import { ViewState, Message, ChatSession, UploadedFile } from "../types";
-import { MAX_FILE_SIZE, MAX_FILE_COUNT, getUserId } from "../utils";
+import {
+  MAX_FILE_SIZE,
+  MAX_FILE_COUNT,
+  getUserId,
+  formatChatTitle,
+} from "../utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -128,13 +133,9 @@ function ChatInterface({
 
       if (!response.ok) throw new Error("Upload failed");
 
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
       const newChat: ChatSession = {
         id: newChatId,
-        title: `Analysis ${hh}:${mm}:${ss}`,
+        title: formatChatTitle(newChatId),
         date: "Just now",
       };
 
@@ -197,7 +198,7 @@ function ChatInterface({
     try {
       const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "X-User-ID": userId,
         },
@@ -353,7 +354,11 @@ export default function ChatPage() {
         });
         if (response.ok) {
           const data = await response.json();
-          setChats(data.chats || []);
+          const fetchedChats = (data.chats || []).map((chat: ChatSession) => ({
+            ...chat,
+            title: formatChatTitle(chat.id),
+          }));
+          setChats(fetchedChats);
         }
       } catch (error) {
         console.error("Failed to fetch chats:", error);
@@ -436,7 +441,9 @@ export default function ChatPage() {
           />
         ) : (
           <div className="flex flex-1 items-center justify-center">
-            <p className="text-muted-foreground animate-pulse">Initializing session...</p>
+            <p className="text-muted-foreground animate-pulse">
+              Initializing session...
+            </p>
           </div>
         )}
       </div>

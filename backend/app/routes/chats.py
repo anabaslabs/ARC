@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from app.rag.vectorstore import _get_index
 from fastapi import APIRouter, HTTPException, Depends
 from app.deps import get_user_id
@@ -27,7 +27,7 @@ async def get_chats(user_id: str = Depends(get_user_id)) -> dict:
                 continue
 
             timestamp = int(session_id) / 1000.0
-            dt = datetime.fromtimestamp(timestamp)
+            dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
             chats.append({
                 "id": session_id,
