@@ -6,8 +6,6 @@ import {
   IconFileTypePpt,
   IconFileTypeTxt,
   IconMarkdown,
-  IconFileTypePng,
-  IconFileTypeJpg,
   IconJson,
   IconFileText,
 } from "@tabler/icons-react";
@@ -38,11 +36,6 @@ export const getFileIcon = (fileName: string): IconComponent => {
     case "md":
     case "mdx":
       return IconMarkdown;
-    case "png":
-      return IconFileTypePng;
-    case "jpg":
-    case "jpeg":
-      return IconFileTypeJpg;
     case "json":
       return IconJson;
     default:

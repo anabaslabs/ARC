@@ -28,7 +28,7 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
         className="hidden"
         ref={fileInputRef}
         onChange={(e) => onUpload(e.target.files)}
-        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json,.png,.jpg,.jpeg"
+        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
       />
 
       <Card
@@ -50,7 +50,7 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
             {isUploading ? "Uploading..." : "Click or drag files here"}
           </p>
           <div className="text-muted-foreground space-y-1 text-sm">
-            <p>PDF, DOCX, XLSX, CSV, PPTX, TXT, MD, JSON, PNG, JPG</p>
+            <p>PDF, DOCX, XLSX, CSV, PPTX, TXT, MD, JSON</p>
             <p>(Up to 6 files • Max 5MB per file)</p>
           </div>
         </div>

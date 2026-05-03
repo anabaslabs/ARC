@@ -5,7 +5,6 @@ from langchain_community.document_loaders import (
     PDFPlumberLoader,
     TextLoader,
     UnstructuredExcelLoader,
-    UnstructuredImageLoader,
     UnstructuredMarkdownLoader,
     UnstructuredPowerPointLoader,
 )
@@ -47,7 +46,7 @@ def read_md(path: str) -> list[Document]:
 # JSON
 # https://python.langchain.com/docs/integrations/document_loaders/json
 def read_json(path: str) -> list[Document]:
-    loader = JSONLoader(file_path=path, jq_schema=".")
+    loader = JSONLoader(file_path=path, jq_schema=".", text_content=False)
     docs = loader.load()
     return docs
 
@@ -75,10 +74,3 @@ def read_pptx(path: str) -> list[Document]:
     docs = loader.load()
     return docs
 
-
-# IMG
-# https://python.langchain.com/docs/integrations/document_loaders/image
-def read_img(path: str) -> list[Document]:
-    loader = UnstructuredImageLoader(path)
-    docs = loader.load()
-    return docs

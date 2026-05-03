@@ -3,7 +3,6 @@ from app.rag.cleaner import clean_text, process_latex
 from app.rag.loader import (
     read_csv,
     read_docx,
-    read_img,
     read_json,
     read_md,
     read_pdf,
@@ -23,10 +22,6 @@ LOADERS = {
     "docx": read_docx,
     "xlsx": read_xlsx,
     "pptx": read_pptx,
-    "img": read_img,
-    "png": read_img,
-    "jpg": read_img,
-    "jpeg": read_img,
 }
 
 

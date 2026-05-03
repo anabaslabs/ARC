@@ -44,7 +44,7 @@ export function FilesView({
         className="hidden"
         ref={fileInputRef}
         onChange={(e) => onAddFile(e.target.files)}
-        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json,.png,.jpg,.jpeg"
+        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
       />
 
       <div className="grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">

@@ -35,9 +35,6 @@ ALLOWED_TYPES = {
     "txt",
     "md",
     "json",
-    "png",
-    "jpg",
-    "jpeg",
 }
 
 PROMPT = (
