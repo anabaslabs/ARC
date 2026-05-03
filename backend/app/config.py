@@ -1,6 +1,5 @@
 import os
 import json
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,7 +20,6 @@ EMBED_MODEL = "models/gemini-embedding-001"
 CHAT_MODEL = "gemini-2.5-flash-lite"
 
 TOP_K = 10
-
 CHUNK_SIZE = 1500
 CHUNK_OVERLAP = 200
 UPLOAD_BATCH_SIZE = 100

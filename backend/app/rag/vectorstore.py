@@ -1,20 +1,23 @@
+import threading
 import time
 
-from app.rag.embedder import embeddings
-from langchain_pinecone import PineconeVectorStore
-from langchain_core.documents import Document
 from app.config import PINECONE_API_KEY, PINECONE_INDEX_NAME, UPLOAD_BATCH_SIZE
+from app.rag.embedder import embeddings
+from langchain_core.documents import Document
+from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
-
 _pinecone_index = None
+_pinecone_lock = threading.Lock()
 
 
 def _get_index():
     global _pinecone_index
     if _pinecone_index is None:
-        pc = Pinecone(api_key=PINECONE_API_KEY)
-        _pinecone_index = pc.Index(PINECONE_INDEX_NAME)
+        with _pinecone_lock:
+            if _pinecone_index is None:
+                pc = Pinecone(api_key=PINECONE_API_KEY)
+                _pinecone_index = pc.Index(PINECONE_INDEX_NAME)
     return _pinecone_index
 
 
@@ -41,10 +44,11 @@ def add_documents(chunks: list[Document], session_id: str = "default_index") -> 
 
 def delete_vectorstore(session_id: str) -> bool:
     try:
-        store = get_vectorstore(session_id)
-        store.delete(delete_all=True)
+        index = _get_index()
+        index.delete(delete_all=True, namespace=session_id)
         return True
-    except Exception:
+    except Exception as e:
+        print(f"delete_vectorstore: failed to delete namespace '{session_id}': {e}")
         return False
 
 

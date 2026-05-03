@@ -23,11 +23,11 @@ class AskResponse(BaseModel):
 async def ask(body: AskRequest) -> AskResponse:
     store = get_vectorstore(body.session_id)
     docs = store.similarity_search(body.question, k=TOP_K)
-    
+
     if not docs:
-        raise HTTPException(404, "No documents found for this session.")
+        raise HTTPException(400, "No documents found for this session.")
 
     context = "\n\n".join(d.page_content for d in docs)
     response = llm.invoke([HumanMessage(content=PROMPT.format(context=context, question=body.question))])
 
-    return AskResponse(answer=response.content)
+    return AskResponse(answer=str(response.content))

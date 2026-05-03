@@ -45,3 +45,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse(os.path.join("app", "static", "favicon.ico"))
+
+
+@app.get('/creator')
+async def creator():
+    return {"krishnendu Das": "https://itskdhere.com", "Saptarshi Roy": "https://hirishi.in"}
