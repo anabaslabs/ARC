@@ -1,3 +1,53 @@
+import {
+  IconFileTypePdf,
+  IconFileTypeDocx,
+  IconFileTypeXls,
+  IconFileTypeCsv,
+  IconFileTypePpt,
+  IconFileTypeTxt,
+  IconMarkdown,
+  IconFileTypePng,
+  IconFileTypeJpg,
+  IconJson,
+  IconFileText,
+} from "@tabler/icons-react";
+import type { ComponentType, SVGAttributes } from "react";
+
+export type IconComponent = ComponentType<SVGAttributes<SVGElement> & { size?: number; className?: string }>;
+
+export const getFileIcon = (fileName: string): IconComponent => {
+  const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+  switch (ext) {
+    case "pdf":
+      return IconFileTypePdf;
+    case "docx":
+    case "doc":
+      return IconFileTypeDocx;
+    case "xlsx":
+    case "xls":
+      return IconFileTypeXls;
+    case "csv":
+      return IconFileTypeCsv;
+    case "pptx":
+    case "ppt":
+      return IconFileTypePpt;
+    case "txt":
+      return IconFileTypeTxt;
+    case "md":
+    case "mdx":
+      return IconMarkdown;
+    case "png":
+      return IconFileTypePng;
+    case "jpg":
+    case "jpeg":
+      return IconFileTypeJpg;
+    case "json":
+      return IconJson;
+    default:
+      return IconFileText;
+  }
+};
+
 export const formatFileSize = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;

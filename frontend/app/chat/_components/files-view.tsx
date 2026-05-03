@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import {
-  IconFileText,
   IconX,
   IconPlus,
   IconRotateRectangle,
@@ -12,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { UploadedFile } from "@/app/chat/types";
-import { truncateFileName, formatFileSize } from "@/app/chat/utils";
+import { truncateFileName, formatFileSize, getFileIcon } from "@/app/chat/utils";
 
 interface FilesViewProps {
   files: UploadedFile[];
@@ -54,7 +53,7 @@ export function FilesView({
             )}
           >
             <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-              <IconFileText size={24} />
+              {(() => { const Icon = getFileIcon(file.name); return <Icon size={24} />; })()}
             </div>
             <div className="min-w-0 w-full px-2">
               <p className="text-sm font-semibold truncate" title={file.name}>

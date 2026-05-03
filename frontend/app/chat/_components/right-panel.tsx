@@ -1,10 +1,10 @@
 "use client";
 
-import { IconFileText, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UploadedFile } from "@/app/chat/types";
-import { truncateFileName, formatFileSize } from "@/app/chat/utils";
+import { truncateFileName, formatFileSize, getFileIcon } from "@/app/chat/utils";
 import { cn } from "@/lib/utils";
 
 interface RightPanelProps {
@@ -46,7 +46,7 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
                 className="flex items-center gap-3 p-2 rounded-md h-12 group"
               >
                 <div className="size-10 rounded bg-background border border-border/50 flex items-center justify-center shrink-0">
-                  <IconFileText size={20} className="text-muted-foreground" />
+                  {(() => { const Icon = getFileIcon(file.name); return <Icon size={20} className="text-muted-foreground" />; })()}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-medium truncate" title={file.name}>
