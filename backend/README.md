@@ -1,3 +1,14 @@
+---
+title: ARC
+emoji: ⚡
+colorFrom: green
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: Augmented Retrieval Chatbot
+---
+
 ## Backend
 
 ### Run Server
