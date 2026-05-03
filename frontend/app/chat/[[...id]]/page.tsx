@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { toast } from "sonner";
 import { IconFilesFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ChatPage() {
   const params = useParams();
+  const router = useRouter();
   const initialChatId = (params.id as string[] | undefined)?.[0];
 
   const [view, setView] = React.useState<ViewState>(
@@ -38,18 +40,34 @@ export default function ChatPage() {
   const [isUploading, setIsUploading] = React.useState(false);
   const [isAsking, setIsAsking] = React.useState(false);
 
+  const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   React.useEffect(() => {
     if (initialChatId) {
       const savedFiles = localStorage.getItem(`arc_files_${initialChatId}`);
       const savedMessages = localStorage.getItem(
         `arc_messages_${initialChatId}`
       );
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (savedFiles) setUploadedFiles(JSON.parse(savedFiles));
-      if (savedMessages) setMessages(JSON.parse(savedMessages));
+      setUploadedFiles(savedFiles ? JSON.parse(savedFiles) : []);
+      setMessages(savedMessages ? JSON.parse(savedMessages) : []);
+      setActiveChatId(initialChatId);
+      setView("chat");
+      setIsRightPanelOpen(false);
+    } else {
+      setView("upload");
+      setActiveChatId(null);
+      setUploadedFiles([]);
+      setMessages([]);
+      setInputValue("");
+      setIsRightPanelOpen(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialChatId]);
 
   React.useEffect(() => {
     const fetchChats = async () => {
@@ -73,13 +91,13 @@ export default function ChatPage() {
     const selectedFiles = Array.from(files);
 
     if (currentFilesCount + selectedFiles.length > MAX_FILE_COUNT) {
-      alert(`You can only upload a maximum of ${MAX_FILE_COUNT} files.`);
+      toast.warning(`Maximum of ${MAX_FILE_COUNT} files allowed.`);
       return;
     }
 
     const filteredFiles = selectedFiles.filter((f) => {
       if (f.size > MAX_FILE_SIZE) {
-        alert(`File "${f.name}" is too large. Maximum size is 5MB.`);
+        toast.error(`"${f.name}" is too large (max 5MB).`);
         return false;
       }
       return true;
@@ -126,9 +144,13 @@ export default function ChatPage() {
 
       if (!response.ok) throw new Error("Upload failed");
 
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
       const newChat: ChatSession = {
         id: newChatId,
-        title: `Analysis ${new Date().toLocaleTimeString()}`,
+        title: `Analysis ${hh}:${mm}:${ss}`,
         date: "Just now",
       };
       setChats([newChat, ...chats]);
@@ -153,11 +175,12 @@ export default function ChatPage() {
         JSON.stringify(fileMetadata)
       );
       setActiveChatId(newChatId);
+      setIsRightPanelOpen(false);
       setView("chat");
-      window.history.pushState(null, "", `/chat/${newChatId}`);
+      router.push(`/chat/${newChatId}`);
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to process files. Please try again.");
+      toast.error("Failed to process files. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -165,6 +188,10 @@ export default function ChatPage() {
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isAsking) return;
+
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -189,6 +216,7 @@ export default function ChatPage() {
           question: inputValue,
           session_id: activeChatId || "default_index",
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) throw new Error("Failed to get answer");
@@ -206,6 +234,7 @@ export default function ChatPage() {
         JSON.stringify(updatedMessages)
       );
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Ask error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -219,18 +248,21 @@ export default function ChatPage() {
         JSON.stringify(updatedMessages)
       );
     } finally {
-      setIsAsking(false);
+      if (abortControllerRef.current === controller) {
+        setIsAsking(false);
+      }
     }
   };
 
   const handleNewChat = () => {
+    abortControllerRef.current?.abort();
     setView("upload");
     setActiveChatId(null);
     setUploadedFiles([]);
     setMessages([]);
     setInputValue("");
     setIsRightPanelOpen(false);
-    window.history.pushState(null, "", "/chat");
+    router.push("/chat");
   };
 
   const deleteAllChats = async () => {
@@ -241,20 +273,23 @@ export default function ChatPage() {
 
       if (!response.ok) throw new Error("Failed to clear index");
 
+      abortControllerRef.current?.abort();
       setView("upload");
       setActiveChatId(null);
       setChats([]);
       setUploadedFiles([]);
       setMessages([]);
+      setInputValue("");
+      setIsRightPanelOpen(false);
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("arc_messages_") || key.startsWith("arc_files_")) {
           localStorage.removeItem(key);
         }
       });
-      window.history.pushState(null, "", "/chat");
+      router.push("/chat");
     } catch (error) {
       console.error("Clear error:", error);
-      alert("Failed to clear backend data. Index might still be there.");
+      toast.error("Failed to clear backend data.");
     }
   };
 
@@ -274,18 +309,19 @@ export default function ChatPage() {
       }
     } catch (error) {
       console.error("Delete error:", error);
-      alert("Failed to delete chat data.");
+      toast.error("Failed to delete chat data.");
     }
   };
 
   const handleChatSelect = (id: string) => {
+    abortControllerRef.current?.abort();
     setActiveChatId(id);
     setView("chat");
     const savedMessages = localStorage.getItem(`arc_messages_${id}`);
     setMessages(savedMessages ? JSON.parse(savedMessages) : []);
     const savedFiles = localStorage.getItem(`arc_files_${id}`);
     setUploadedFiles(savedFiles ? JSON.parse(savedFiles) : []);
-    window.history.pushState(null, "", `/chat/${id}`);
+    router.push(`/chat/${id}`);
     setIsRightPanelOpen(false);
   };
 

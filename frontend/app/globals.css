@@ -3,45 +3,6 @@
 @import "shadcn/tailwind.css";
 @import "katex/dist/katex.min.css";
 
-@layer utilities {
-  .markdown-content {
-    @apply text-[15px] leading-7;
-  }
-  .markdown-content p {
-    @apply mb-4 last:mb-0;
-  }
-  .markdown-content ul {
-    @apply mb-4 list-disc space-y-1.5 pl-6;
-  }
-  .markdown-content ol {
-    @apply mb-4 list-decimal space-y-1.5 pl-6;
-  }
-  .markdown-content li > ul,
-  .markdown-content li > ol {
-    @apply mt-1.5 mb-0;
-  }
-  .markdown-content li {
-    @apply leading-relaxed;
-  }
-  .markdown-content code {
-    tab-size: 4;
-  }
-  .markdown-content h1,
-  .markdown-content h2,
-  .markdown-content h3 {
-    @apply mt-6 mb-4 font-bold;
-  }
-  .markdown-content h1 {
-    @apply text-2xl;
-  }
-  .markdown-content h2 {
-    @apply text-xl;
-  }
-  .markdown-content h3 {
-    @apply text-lg;
-  }
-}
-
 .hljs {
   @apply text-foreground bg-transparent;
 }

@@ -17,7 +17,7 @@ export function Markdown({ content, className }: MarkdownProps) {
   return (
     <div
       className={cn(
-        "markdown-content prose prose-sm dark:prose-invert max-w-none wrap-break-word",
+        "prose prose-sm dark:prose-invert max-w-none wrap-break-word",
         "prose-p:leading-relaxed prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-none",
         "prose-code:bg-muted/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none",
         "prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5",
@@ -48,7 +48,8 @@ export function Markdown({ content, className }: MarkdownProps) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           code: ({ node, className, children, ...props }) => {
             const match = /language-(\w+)/.exec(className || "");
-            const isInline = !match;
+            const isInline = !match && !String(children).includes("\n");
+
             return isInline ? (
               <code
                 {...props}

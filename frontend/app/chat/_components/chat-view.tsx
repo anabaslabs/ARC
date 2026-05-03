@@ -49,6 +49,7 @@ interface SpeechRecognition extends EventTarget {
   onend: () => void;
   start(): void;
   stop(): void;
+  abort(): void;
 }
 
 interface SpeechRecognitionConstructor {
@@ -74,6 +75,11 @@ export function ChatView({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const onInputChangeRef = useRef(onInputChange);
+
+  useEffect(() => {
+    onInputChangeRef.current = onInputChange;
+  }, [onInputChange]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -101,7 +107,7 @@ export function ChatView({
           )
             .map((result: SpeechRecognitionResult) => result[0].transcript)
             .join("");
-          onInputChange(transcript);
+          onInputChangeRef.current(transcript);
         };
 
         recognition.onend = () => {
@@ -114,9 +120,13 @@ export function ChatView({
         };
 
         recognitionRef.current = recognition;
+
+        return () => {
+          recognition.abort();
+        };
       }
     }
-  }, [onInputChange]);
+  }, []);
 
   const toggleListening = useCallback(() => {
     if (isListening) {
@@ -140,9 +150,12 @@ export function ChatView({
 
   useEffect(() => {
     const scrollToBottom = () => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTo({
-          top: scrollRef.current.scrollHeight,
+      const viewport = scrollRef.current?.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (viewport) {
+        viewport.scrollTo({
+          top: viewport.scrollHeight,
           behavior: "smooth",
         });
       }
