@@ -242,10 +242,11 @@ export default function ChatPage() {
           </main>
         </SidebarInset>
 
-        {view === "chat" && isRightPanelOpen && (
+        {view === "chat" && (
           <RightPanel
             files={uploadedFiles}
             onClose={() => setIsRightPanelOpen(false)}
+            isOpen={isRightPanelOpen}
           />
         )}
       </div>

@@ -54,20 +54,20 @@ export function AppSidebar({
         )}
       >
         <SidebarTrigger
-          className={cn("size-9 [&_svg]:size-5", !isCollapsed && "-ml-1")}
+          className={cn("size-10 [&_svg]:size-[22px]", !isCollapsed && "-ml-1")}
         />
       </SidebarHeader>
       <SidebarContent className="p-2 space-y-4">
         <Button
           onClick={onNewChat}
-          variant="outline"
+          variant="ghost"
           className={cn(
-            "w-full justify-start gap-2 h-9 border-dashed",
+            "w-full justify-start gap-3 h-10 px-2 text-sm font-bold hover:bg-sidebar-accent/50",
             isCollapsed && "justify-center p-0"
           )}
           title={isCollapsed ? "New Chat" : undefined}
         >
-          <IconPlus size={isCollapsed ? 20 : 16} />
+          <IconPlus size={20} stroke={2.5} />
           {!isCollapsed && <span>New Chat</span>}
         </Button>
 
@@ -83,14 +83,17 @@ export function AppSidebar({
                 <SidebarMenuButton
                   isActive={activeChatId === chat.id}
                   onClick={() => onChatSelect(chat.id)}
-                  className="rounded-md"
+                  className="rounded-md h-10 px-2 text-sm"
                   tooltip={isCollapsed ? chat.title : undefined}
                 >
-                  <IconMessage
-                    size={isCollapsed ? 18 : 14}
-                    className="opacity-70"
-                  />
                   {!isCollapsed && <span>{chat.title}</span>}
+                  {isCollapsed && (
+                    <div className="size-8 rounded bg-sidebar-accent/50 flex items-center justify-center">
+                      <span className="text-[10px] font-bold">
+                        {chat.title.substring(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -108,13 +111,13 @@ export function AppSidebar({
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 h-9",
+                "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 h-10 px-2 text-sm font-bold",
                 isCollapsed && "justify-center p-0"
               )}
               disabled={chats.length === 0}
               title={isCollapsed ? "Delete All" : undefined}
             >
-              <IconTrash size={isCollapsed ? 18 : 16} />
+              <IconTrash size={20} stroke={2.5} />
               {!isCollapsed && <span>Delete All</span>}
             </Button>
           </AlertDialogTrigger>

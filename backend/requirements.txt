@@ -16,5 +16,7 @@ docx2txt
 openpyxl
 python-pptx
 unstructured
+markdown
+jq
 
 python-dotenv
