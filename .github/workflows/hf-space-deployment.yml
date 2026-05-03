@@ -40,7 +40,7 @@ jobs:
           if ! git diff --staged --quiet; then
             git commit -m "Deploy from GitHub Actions: ${{ github.sha }}"
             git push origin main
-            echo "Deployment to Hugging Face Space successful!"
+            echo "Deployment to HuggingFace Space successful!"
           else
             echo "No changes detected. Deployment skipped."
           fi

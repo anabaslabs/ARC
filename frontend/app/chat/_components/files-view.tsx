@@ -37,7 +37,7 @@ export function FilesView({
   return (
     <div className="bg-sidebar relative flex flex-1 flex-col items-center justify-center space-y-4 p-4 sm:space-y-8 sm:p-8">
       <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-        Upload & Ask
+        Ready to explore..?
       </h2>
 
       <input

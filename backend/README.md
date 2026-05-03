@@ -2,7 +2,7 @@
 title: ARC
 emoji: ⚡
 colorFrom: green
-colorTo: yellow
+colorTo: green
 sdk: docker
 app_port: 7860
 pinned: false
