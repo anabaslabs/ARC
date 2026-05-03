@@ -2,19 +2,19 @@ from langchain_community.document_loaders import (
     CSVLoader,
     Docx2txtLoader,
     JSONLoader,
-    PDFPlumberLoader,
     TextLoader,
     UnstructuredExcelLoader,
     UnstructuredMarkdownLoader,
     UnstructuredPowerPointLoader,
 )
+from langchain_pymupdf4llm import PyMuPDF4LLMLoader
 from langchain_core.documents import Document
 
 
 # PDF
-# https://python.langchain.com/docs/integrations/document_loaders/pdfplumber
+# https://docs.langchain.com/oss/python/integrations/document_loaders/pymupdf4llm
 def read_pdf(path: str) -> list[Document]:
-    loader = PDFPlumberLoader(path)
+    loader = PyMuPDF4LLMLoader(path)
     docs = loader.load()
     return docs
 
