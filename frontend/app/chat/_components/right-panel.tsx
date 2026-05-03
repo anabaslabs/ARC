@@ -20,20 +20,30 @@ interface RightPanelProps {
 export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
   return (
     <div
-      className="group/right-panel peer text-sidebar-foreground hidden md:block"
+      className="group/right-panel peer text-sidebar-foreground"
       data-state={isOpen ? "expanded" : "collapsed"}
     >
       <div
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "fixed inset-0 z-40 bg-black/10 backdrop-blur-xs transition-opacity duration-100 md:hidden",
+          isOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+        )}
+        onClick={onClose}
+      />
+
+      <div
+        className={cn(
+          "relative hidden w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-in-out md:block",
           !isOpen && "w-0"
         )}
       />
 
       <aside
         className={cn(
-          "bg-muted dark:bg-muted/30 fixed inset-y-0 right-0 z-10 flex h-svh w-(--sidebar-width) flex-col border-l shadow-sm transition-[left,right,width] duration-200 ease-linear",
-          !isOpen && "-right-(--sidebar-width)"
+          "bg-sidebar md:bg-muted md:dark:bg-muted/30 fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] flex-col border-l shadow-sm transition-[left,right,width] duration-200 ease-in-out sm:w-(--sidebar-width) md:z-10",
+          !isOpen && "-right-full sm:-right-(--sidebar-width)"
         )}
       >
         <div className="flex h-14 shrink-0 items-center justify-between p-4">

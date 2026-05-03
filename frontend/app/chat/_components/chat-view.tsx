@@ -14,7 +14,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Message } from "@/app/chat/types";
 
-// Speech Recognition Types
 interface SpeechRecognitionAlternative {
   transcript: string;
   confidence: number;
@@ -220,7 +219,7 @@ export function ChatView({
                   handleSend();
                 }
               }}
-              placeholder="Ask a question about your documents..."
+              placeholder="Ask ARC..."
               className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-14 resize-none overflow-y-auto rounded-xl border-2 py-4.5 pr-12 pl-12 text-sm backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 [&::-webkit-scrollbar]:hidden"
             />
             <div className="absolute top-0 right-3 bottom-0 flex items-center">
@@ -240,7 +239,7 @@ export function ChatView({
           </div>
           <p className="text-muted-foreground mt-3 text-center text-[10px]">
             <span className="font-bungee">ARC</span> is AI and can make
-            mistakes. Please double-check important info.
+            mistakes.
           </p>
         </div>
       </div>

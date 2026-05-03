@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { ChatSession } from "@/app/chat/types";
+import { useEffect, useRef } from "react";
 
 interface AppSidebarProps {
   chats: ChatSession[];
@@ -46,8 +47,40 @@ export function AppSidebar({
   onDeleteAll,
   onDeleteChat,
 }: AppSidebarProps) {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const { state, open, isMobile, setOpen } = useSidebar();
+  const isCollapsed = state === "collapsed" && !isMobile;
+
+  const openRef = useRef(open);
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  const userLargeScreenPreference = useRef(true);
+
+  const lastWidth = useRef(
+    typeof window !== "undefined" ? window.innerWidth : 1280
+  );
+
+  useEffect(() => {
+    if (isMobile) return;
+
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const wasLarge = lastWidth.current >= 1280;
+      const isLarge = width >= 1280;
+
+      if (!isLarge && wasLarge) {
+        userLargeScreenPreference.current = openRef.current;
+        setOpen(false);
+      } else if (isLarge && !wasLarge) {
+        setOpen(userLargeScreenPreference.current);
+      }
+      lastWidth.current = width;
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobile, setOpen]);
 
   return (
     <Sidebar variant="sidebar" collapsible="icon" className="border-r">

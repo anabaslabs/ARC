@@ -5,7 +5,11 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { IconFilesFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { AppSidebar } from "../_components/app-sidebar";
 import { UploadView } from "../_components/upload-view";
 import { FilesView } from "../_components/files-view";
@@ -34,7 +38,6 @@ export default function ChatPage() {
   const [isUploading, setIsUploading] = React.useState(false);
   const [isAsking, setIsAsking] = React.useState(false);
 
-  // Load saved data on mount to avoid hydration mismatch
   React.useEffect(() => {
     if (initialChatId) {
       const savedFiles = localStorage.getItem(`arc_files_${initialChatId}`);
@@ -48,7 +51,6 @@ export default function ChatPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch chats on initial mount
   React.useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -124,7 +126,6 @@ export default function ChatPage() {
 
       if (!response.ok) throw new Error("Upload failed");
 
-      // Once uploaded and processed, we can start the chat session
       const newChat: ChatSession = {
         id: newChatId,
         title: `Analysis ${new Date().toLocaleTimeString()}`,
@@ -285,6 +286,7 @@ export default function ChatPage() {
     const savedFiles = localStorage.getItem(`arc_files_${id}`);
     setUploadedFiles(savedFiles ? JSON.parse(savedFiles) : []);
     window.history.pushState(null, "", `/chat/${id}`);
+    setIsRightPanelOpen(false);
   };
 
   return (
@@ -300,17 +302,20 @@ export default function ChatPage() {
         />
 
         <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-4 shadow-sm">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/logo.png"
-                alt="ARC Logo"
-                height={512}
-                width={512}
-                priority
-                className="size-7 object-contain"
-              />
-              <h1 className="font-lexend text-lg font-bold">ARC</h1>
+          <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-2 shadow-sm">
+            <div className="flex items-center gap-1">
+              <SidebarTrigger className="md:hidden" />
+              <div className="flex items-center gap-2 px-2">
+                <Image
+                  src="/logo.png"
+                  alt="ARC Logo"
+                  height={512}
+                  width={512}
+                  priority
+                  className="size-7 object-contain"
+                />
+                <h1 className="font-lexend text-lg font-bold">ARC</h1>
+              </div>
             </div>
             {view === "chat" && !isRightPanelOpen && (
               <Button
