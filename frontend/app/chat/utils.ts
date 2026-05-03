@@ -13,7 +13,9 @@ import {
 } from "@tabler/icons-react";
 import type { ComponentType, SVGAttributes } from "react";
 
-export type IconComponent = ComponentType<SVGAttributes<SVGElement> & { size?: number; className?: string }>;
+export type IconComponent = ComponentType<
+  SVGAttributes<SVGElement> & { size?: number; className?: string }
+>;
 
 export const getFileIcon = (fileName: string): IconComponent => {
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
@@ -76,3 +78,6 @@ export const truncateFileName = (name: string, maxLength = 24) => {
     extension
   );
 };
+
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+export const MAX_FILE_COUNT = 6;

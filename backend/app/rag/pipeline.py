@@ -46,6 +46,3 @@ def process_file(path: str, ext: str, session_id: str = "default_index") -> int:
     chunks = chunk_docs(docs)
     add_documents(chunks, session_id=session_id)
     return len(chunks)
-
-
-# Manual

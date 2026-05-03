@@ -14,10 +14,10 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6 bg-sidebar">
+    <div className="bg-sidebar flex flex-1 flex-col items-center justify-center space-y-6 p-8 text-center">
       <div className="space-y-2">
         <h2 className="text-4xl font-bold tracking-tight">Upload & Ask</h2>
-        <p className="text-muted-foreground text-lg max-w-md mx-auto">
+        <p className="text-muted-foreground mx-auto max-w-md text-lg">
           Upload your documents and let AI help you find insights instantly.
         </p>
       </div>
@@ -34,22 +34,22 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
       <Card
         onClick={() => !isUploading && fileInputRef.current?.click()}
         className={cn(
-          "w-full max-w-2xl aspect-2/1 border-2 border-dashed flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-accent/50 transition-all group",
-          isUploading && "opacity-50 cursor-not-allowed"
+          "hover:bg-accent/50 group flex aspect-2/1 w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 border-2 border-dashed transition-all",
+          isUploading && "cursor-not-allowed opacity-50"
         )}
       >
-        <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="bg-primary/10 flex size-16 items-center justify-center transition-transform group-hover:scale-110">
           {isUploading ? (
-            <IconRotateRectangle className="size-8 text-primary animate-spin" />
+            <IconRotateRectangle className="text-primary size-8 animate-spin" />
           ) : (
-            <IconUpload className="size-8 text-primary" />
+            <IconUpload className="text-primary size-8" />
           )}
         </div>
         <div className="space-y-2">
-          <p className="font-semibold text-lg">
+          <p className="text-lg font-semibold">
             {isUploading ? "Uploading..." : "Click or drag files here"}
           </p>
-          <div className="space-y-1 text-sm text-muted-foreground">
+          <div className="text-muted-foreground space-y-1 text-sm">
             <p>PDF, DOCX, XLSX, CSV, PPTX, TXT, MD, JSON, PNG, JPG</p>
             <p>(Up to 6 files • Max 5MB per file)</p>
           </div>

@@ -5,16 +5,16 @@
 
 @layer utilities {
   .markdown-content {
-    @apply leading-7 text-[15px];
+    @apply text-[15px] leading-7;
   }
   .markdown-content p {
     @apply mb-4 last:mb-0;
   }
   .markdown-content ul {
-    @apply list-disc pl-6 mb-4 space-y-1.5;
+    @apply mb-4 list-disc space-y-1.5 pl-6;
   }
   .markdown-content ol {
-    @apply list-decimal pl-6 mb-4 space-y-1.5;
+    @apply mb-4 list-decimal space-y-1.5 pl-6;
   }
   .markdown-content li > ul,
   .markdown-content li > ol {
@@ -29,7 +29,7 @@
   .markdown-content h1,
   .markdown-content h2,
   .markdown-content h3 {
-    @apply font-bold mt-6 mb-4;
+    @apply mt-6 mb-4 font-bold;
   }
   .markdown-content h1 {
     @apply text-2xl;
@@ -138,7 +138,7 @@
   --chart-3: oklch(0.466 0.025 107.3);
   --chart-4: oklch(0.394 0.023 107.4);
   --chart-5: oklch(0.286 0.016 107.4);
-  --radius: 0.625rem;
+  --radius: 0rem;
   --sidebar: oklch(0.988 0.003 106.5);
   --sidebar-foreground: oklch(0.153 0.006 107.1);
   --sidebar-primary: oklch(0.596 0.145 163.225);

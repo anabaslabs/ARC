@@ -5,7 +5,7 @@ import { IconFiles } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { AppSidebar } from "../_components/app-sidebar";
 import { UploadView } from "../_components/upload-view";
 import { FilesView } from "../_components/files-view";
@@ -13,13 +13,21 @@ import { ChatView } from "../_components/chat-view";
 import { RightPanel } from "../_components/right-panel";
 
 import { ViewState, Message, ChatSession, UploadedFile } from "../types";
+import { MAX_FILE_SIZE, MAX_FILE_COUNT } from "../utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function ChatPage() {
-  const [view, setView] = React.useState<ViewState>("upload");
+  const params = useParams();
+  const initialChatId = (params.id as string[] | undefined)?.[0];
+
+  const [view, setView] = React.useState<ViewState>(
+    initialChatId ? "chat" : "upload"
+  );
   const [chats, setChats] = React.useState<ChatSession[]>([]);
-  const [activeChatId, setActiveChatId] = React.useState<string | null>(null);
+  const [activeChatId, setActiveChatId] = React.useState<string | null>(
+    initialChatId ?? null
+  );
   const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [inputValue, setInputValue] = React.useState("");
@@ -27,9 +35,20 @@ export default function ChatPage() {
   const [isUploading, setIsUploading] = React.useState(false);
   const [isAsking, setIsAsking] = React.useState(false);
 
-  const router = useRouter();
-  const params = useParams();
-  
+  // Load saved data on mount to avoid hydration mismatch
+  React.useEffect(() => {
+    if (initialChatId) {
+      const savedFiles = localStorage.getItem(`arc_files_${initialChatId}`);
+      const savedMessages = localStorage.getItem(
+        `arc_messages_${initialChatId}`
+      );
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (savedFiles) setUploadedFiles(JSON.parse(savedFiles));
+      if (savedMessages) setMessages(JSON.parse(savedMessages));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Fetch chats on initial mount
   React.useEffect(() => {
     const fetchChats = async () => {
@@ -46,36 +65,8 @@ export default function ChatPage() {
     fetchChats();
   }, []);
 
-  // Sync state with URL
-  React.useEffect(() => {
-    const chatId = params.id?.[0];
-    if (chatId) {
-      setActiveChatId(chatId);
-      setView("chat");
-      const savedMessages = localStorage.getItem(`arc_messages_${chatId}`);
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      } else {
-        setMessages([]);
-      }
-      const savedFiles = localStorage.getItem(`arc_files_${chatId}`);
-      if (savedFiles) {
-        setUploadedFiles(JSON.parse(savedFiles));
-      } else {
-        setUploadedFiles([]);
-      }
-    } else {
-      setActiveChatId(null);
-      setView("upload");
-      setMessages([]);
-    }
-  }, [params.id]);
-
   const handleFileSelect = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    const MAX_FILE_COUNT = 6;
 
     const currentFilesCount = uploadedFiles.length;
     const selectedFiles = Array.from(files);
@@ -149,9 +140,18 @@ export default function ChatPage() {
         },
       ];
       setMessages(initMessages);
-      localStorage.setItem(`arc_messages_${newChatId}`, JSON.stringify(initMessages));
-      const fileMetadata = uploadedFiles.map(f => ({ name: f.name, size: f.size }));
-      localStorage.setItem(`arc_files_${newChatId}`, JSON.stringify(fileMetadata));
+      localStorage.setItem(
+        `arc_messages_${newChatId}`,
+        JSON.stringify(initMessages)
+      );
+      const fileMetadata = uploadedFiles.map((f) => ({
+        name: f.name,
+        size: f.size,
+      }));
+      localStorage.setItem(
+        `arc_files_${newChatId}`,
+        JSON.stringify(fileMetadata)
+      );
       setActiveChatId(newChatId);
       setView("chat");
       window.history.pushState(null, "", `/chat/${newChatId}`);
@@ -174,7 +174,10 @@ export default function ChatPage() {
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-    localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(newMessages));
+    localStorage.setItem(
+      `arc_messages_${activeChatId}`,
+      JSON.stringify(newMessages)
+    );
     setInputValue("");
     setIsAsking(true);
 
@@ -182,9 +185,9 @@ export default function ChatPage() {
       const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           question: inputValue,
-          session_id: activeChatId || "default_index"
+          session_id: activeChatId || "default_index",
         }),
       });
 
@@ -198,7 +201,10 @@ export default function ChatPage() {
       };
       const updatedMessages = [...newMessages, aiMessage];
       setMessages(updatedMessages);
-      localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(updatedMessages));
+      localStorage.setItem(
+        `arc_messages_${activeChatId}`,
+        JSON.stringify(updatedMessages)
+      );
     } catch (error) {
       console.error("Ask error:", error);
       const errorMessage: Message = {
@@ -208,7 +214,10 @@ export default function ChatPage() {
       };
       const updatedMessages = [...newMessages, errorMessage];
       setMessages(updatedMessages);
-      localStorage.setItem(`arc_messages_${activeChatId}`, JSON.stringify(updatedMessages));
+      localStorage.setItem(
+        `arc_messages_${activeChatId}`,
+        JSON.stringify(updatedMessages)
+      );
     } finally {
       setIsAsking(false);
     }
@@ -221,7 +230,7 @@ export default function ChatPage() {
     setMessages([]);
     setInputValue("");
     setIsRightPanelOpen(false);
-    window.history.pushState(null, "", '/chat');
+    window.history.pushState(null, "", "/chat");
   };
 
   const deleteAllChats = async () => {
@@ -242,7 +251,7 @@ export default function ChatPage() {
           localStorage.removeItem(key);
         }
       });
-      window.history.pushState(null, "", '/chat');
+      window.history.pushState(null, "", "/chat");
     } catch (error) {
       console.error("Clear error:", error);
       alert("Failed to clear backend data. Index might still be there.");
@@ -269,38 +278,32 @@ export default function ChatPage() {
     }
   };
 
+  const handleChatSelect = (id: string) => {
+    setActiveChatId(id);
+    setView("chat");
+    const savedMessages = localStorage.getItem(`arc_messages_${id}`);
+    setMessages(savedMessages ? JSON.parse(savedMessages) : []);
+    const savedFiles = localStorage.getItem(`arc_files_${id}`);
+    setUploadedFiles(savedFiles ? JSON.parse(savedFiles) : []);
+    window.history.pushState(null, "", `/chat/${id}`);
+  };
+
   return (
     <SidebarProvider>
-      <div className="flex h-screen w-full overflow-hidden bg-background">
+      <div className="bg-background flex h-screen w-full overflow-hidden">
         <AppSidebar
           chats={chats}
           activeChatId={activeChatId}
-          onChatSelect={(id) => {
-            setActiveChatId(id);
-            setView("chat");
-            const savedMessages = localStorage.getItem(`arc_messages_${id}`);
-            if (savedMessages) {
-              setMessages(JSON.parse(savedMessages));
-            } else {
-              setMessages([]);
-            }
-            const savedFiles = localStorage.getItem(`arc_files_${id}`);
-            if (savedFiles) {
-              setUploadedFiles(JSON.parse(savedFiles));
-            } else {
-              setUploadedFiles([]);
-            }
-            window.history.pushState(null, "", `/chat/${id}`);
-          }}
+          onChatSelect={handleChatSelect}
           onNewChat={handleNewChat}
           onDeleteAll={deleteAllChats}
           onDeleteChat={deleteChat}
         />
 
-        <SidebarInset className="flex flex-col flex-1 min-h-0 overflow-hidden">
-          <header className="flex h-14 shrink-0 items-center gap-2 px-4 justify-between bg-sidebar border-b border-border/50 shadow-sm">
+        <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-4 shadow-sm">
             <div className="flex items-center gap-2">
-              <h1 className="font-lexend font-bold text-lg">ARC</h1>
+              <h1 className="font-lexend text-lg font-bold">ARC</h1>
             </div>
             {view === "chat" && !isRightPanelOpen && (
               <Button
@@ -313,8 +316,8 @@ export default function ChatPage() {
             )}
           </header>
 
-          <main className="flex flex-1 min-h-0 overflow-hidden relative">
-            <div className="flex-1 flex flex-col min-h-0">
+          <main className="relative flex min-h-0 flex-1 overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col">
               {view === "upload" && (
                 <UploadView
                   onUpload={handleFileSelect}

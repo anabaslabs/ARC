@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPlus, IconTrash, IconMessage } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -52,7 +52,7 @@ export function AppSidebar({
     <Sidebar variant="sidebar" collapsible="icon" className="border-r">
       <SidebarHeader
         className={cn(
-          "h-14 flex flex-row items-center px-4",
+          "flex h-14 flex-row items-center px-4",
           isCollapsed && "justify-center px-0"
         )}
       >
@@ -60,12 +60,12 @@ export function AppSidebar({
           className={cn("size-10 [&_svg]:size-[22px]", !isCollapsed && "-ml-1")}
         />
       </SidebarHeader>
-      <SidebarContent className="p-2 space-y-4">
+      <SidebarContent className="space-y-4 p-2">
         <Button
           onClick={onNewChat}
           variant="ghost"
           className={cn(
-            "w-full justify-start gap-3 h-10 px-2 text-sm font-bold hover:bg-sidebar-accent/50",
+            "hover:bg-sidebar-accent/50 h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
             isCollapsed && "justify-center p-0"
           )}
           title={isCollapsed ? "New Chat" : undefined}
@@ -74,9 +74,9 @@ export function AppSidebar({
           {!isCollapsed && <span>New Chat</span>}
         </Button>
 
-        <div className="space-y-1 mt-2">
+        <div className="mt-2 space-y-1">
           {!isCollapsed && (
-            <p className="px-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="text-muted-foreground px-2 text-[10px] font-medium tracking-wider uppercase">
               Recent Chats
             </p>
           )}
@@ -87,8 +87,8 @@ export function AppSidebar({
                   isActive={activeChatId === chat.id}
                   onClick={() => onChatSelect(chat.id)}
                   className={cn(
-                    "rounded-md h-10 px-2 text-sm transition-colors",
-                    "data-active:bg-transparent data-active:font-normal font-normal",
+                    "h-10 px-2 text-sm transition-colors",
+                    "font-normal data-active:bg-transparent data-active:font-normal",
                     activeChatId === chat.id
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -97,7 +97,7 @@ export function AppSidebar({
                 >
                   {!isCollapsed && <span>{chat.title}</span>}
                   {isCollapsed && (
-                    <div className="size-8 rounded bg-sidebar-accent/50 flex items-center justify-center">
+                    <div className="bg-sidebar-accent/50 flex size-8 items-center justify-center">
                       <span className="text-[10px] font-bold">
                         {chat.title.substring(0, 2).toUpperCase()}
                       </span>
@@ -106,7 +106,7 @@ export function AppSidebar({
                 </SidebarMenuButton>
                 {!isCollapsed && (
                   <SidebarMenuAction
-                    className="size-7 hover:text-destructive opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent"
+                    className="hover:text-destructive size-7 opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDeleteChat(chat.id);
@@ -119,20 +119,20 @@ export function AppSidebar({
               </SidebarMenuItem>
             ))}
             {chats.length === 0 && !isCollapsed && (
-              <p className="px-2 py-4 text-xs text-muted-foreground text-center italic">
+              <p className="text-muted-foreground px-2 py-4 text-center text-xs italic">
                 No chats yet
               </p>
             )}
           </SidebarMenu>
         </div>
       </SidebarContent>
-      <SidebarFooter className="p-2 border-t">
+      <SidebarFooter className="border-t p-2">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10 h-10 px-2 text-sm font-bold",
+                "text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
                 isCollapsed && "justify-center p-0"
               )}
               disabled={chats.length === 0}
@@ -155,7 +155,7 @@ export function AppSidebar({
               <AlertDialogAction
                 onClick={onDeleteAll}
                 variant="destructive"
-                className="rounded-md"
+                className=""
               >
                 Delete All
               </AlertDialogAction>

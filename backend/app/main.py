@@ -31,6 +31,3 @@ app.include_router(chats_router)
 @app.get("/")
 async def root():
     return {"name": APP_NAME, "version": APP_VERSION, "status": "ok"}
-
-
-# Manual

@@ -19,6 +19,7 @@ TOP_K = 10
 
 CHUNK_SIZE = 1500
 CHUNK_OVERLAP = 200
+UPLOAD_BATCH_SIZE = 100
 
 MAX_FILE_COUNT = 6
 MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -46,6 +47,3 @@ PROMPT = (
     "If you cannot answer from the context, say so honestly. "
     "Context: {context} Question: {question}"
 )
-
-
-# Manual

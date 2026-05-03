@@ -11,7 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { UploadedFile } from "@/app/chat/types";
-import { truncateFileName, formatFileSize, getFileIcon } from "@/app/chat/utils";
+import {
+  truncateFileName,
+  formatFileSize,
+  getFileIcon,
+} from "@/app/chat/utils";
 
 interface FilesViewProps {
   files: UploadedFile[];
@@ -31,7 +35,7 @@ export function FilesView({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center p-8 space-y-8 bg-sidebar">
+    <div className="bg-sidebar relative flex flex-1 flex-col items-center justify-center space-y-8 p-8">
       <h2 className="text-3xl font-bold tracking-tight">Upload & Ask</h2>
 
       <input
@@ -43,23 +47,26 @@ export function FilesView({
         accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json,.png,.jpg,.jpeg"
       />
 
-      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {files.map((file, i) => (
           <Card
             key={i}
             className={cn(
-              "p-4 flex flex-col items-center justify-center gap-3 relative group text-center h-36 transition-all",
+              "group relative flex h-36 flex-col items-center justify-center gap-3 p-4 text-center transition-all",
               isUploading && "opacity-50 grayscale-[0.5]"
             )}
           >
-            <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-              {(() => { const Icon = getFileIcon(file.name); return <Icon size={24} />; })()}
+            <div className="bg-primary/10 text-primary flex size-12 items-center justify-center transition-transform group-hover:scale-110">
+              {(() => {
+                const Icon = getFileIcon(file.name);
+                return <Icon size={24} />;
+              })()}
             </div>
-            <div className="min-w-0 w-full px-2">
-              <p className="text-sm font-semibold truncate" title={file.name}>
+            <div className="w-full min-w-0 px-2">
+              <p className="truncate text-sm font-semibold" title={file.name}>
                 {truncateFileName(file.name, 28)}
               </p>
-              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider font-medium">
+              <p className="text-muted-foreground mt-1 text-[10px] font-medium tracking-wider uppercase">
                 {formatFileSize(file.size)}
               </p>
             </div>
@@ -67,7 +74,7 @@ export function FilesView({
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-1.5 right-1.5 size-6 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-1.5 right-1.5 size-6 transition-colors"
                 onClick={() => onRemoveFile(i)}
               >
                 <IconX className="size-3.5" />
@@ -79,7 +86,7 @@ export function FilesView({
           <Button
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="h-36 border-2 border-dashed flex flex-col gap-2 items-center justify-center hover:bg-accent/50 transition-all"
+            className="hover:bg-accent/50 flex h-36 flex-col items-center justify-center gap-2 border-2 border-dashed transition-all"
           >
             <IconPlus size={24} />
             <span className="text-xs font-medium">Add more</span>
@@ -90,7 +97,7 @@ export function FilesView({
       <div className="flex flex-col items-center gap-4">
         <Button
           size="lg"
-          className="px-8 gap-2 group min-w-50"
+          className="group min-w-50 gap-2 px-8"
           onClick={onStartChat}
           disabled={isUploading}
         >
@@ -104,14 +111,14 @@ export function FilesView({
               <span>Analyze Documents</span>
               <IconArrowRight
                 size={18}
-                className="group-hover:translate-x-1 transition-transform"
+                className="transition-transform group-hover:translate-x-1"
               />
             </>
           )}
         </Button>
 
         {isUploading && (
-          <p className="text-xs text-muted-foreground animate-pulse">
+          <p className="text-muted-foreground animate-pulse text-xs">
             Please wait while we process your documents...
           </p>
         )}

@@ -37,7 +37,7 @@ export default function RootLayout({
         "antialiased"
       )}
     >
-      <body className="flex flex-col min-h-full dark">
+      <body className="dark flex min-h-full flex-col">
         <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
       </body>
     </html>

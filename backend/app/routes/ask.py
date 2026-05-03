@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
+llm = ChatGoogleGenerativeAI(model=CHAT_MODEL, google_api_key=GOOGLE_API_KEY)
+
 
 class AskRequest(BaseModel):
     question: str
@@ -15,19 +17,17 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str
-    sources: list[str]
+
 
 @router.post("/ask")
 async def ask(body: AskRequest) -> AskResponse:
     store = get_vectorstore(body.session_id)
-    if not store:
-        raise HTTPException(404, "No documents ingested yet.")
-
     docs = store.similarity_search(body.question, k=TOP_K)
-    context = "\n\n".join(d.page_content for d in docs)
-    sources = list({d.metadata.get("source", "unknown") for d in docs})
+    
+    if not docs:
+        raise HTTPException(404, "No documents found for this session.")
 
-    llm = ChatGoogleGenerativeAI(model=CHAT_MODEL, google_api_key=GOOGLE_API_KEY)
+    context = "\n\n".join(d.page_content for d in docs)
     response = llm.invoke([HumanMessage(content=PROMPT.format(context=context, question=body.question))])
 
-    return AskResponse(answer=response.content, sources=sources)
+    return AskResponse(answer=response.content)
