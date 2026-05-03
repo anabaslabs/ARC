@@ -86,7 +86,13 @@ export function AppSidebar({
                 <SidebarMenuButton
                   isActive={activeChatId === chat.id}
                   onClick={() => onChatSelect(chat.id)}
-                  className="rounded-md h-10 px-2 text-sm"
+                  className={cn(
+                    "rounded-md h-10 px-2 text-sm transition-colors",
+                    "data-active:bg-transparent data-active:font-normal font-normal",
+                    activeChatId === chat.id
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
                   tooltip={isCollapsed ? chat.title : undefined}
                 >
                   {!isCollapsed && <span>{chat.title}</span>}
@@ -100,7 +106,7 @@ export function AppSidebar({
                 </SidebarMenuButton>
                 {!isCollapsed && (
                   <SidebarMenuAction
-                    className="size-7 hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover/menu-item:opacity-100"
+                    className="size-7 hover:text-destructive opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDeleteChat(chat.id);

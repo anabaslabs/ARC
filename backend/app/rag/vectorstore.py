@@ -43,7 +43,11 @@ def delete_all_vectorstores() -> bool:
     try:
         pc = Pinecone(api_key=PINECONE_API_KEY)
         index = pc.Index(PINECONE_INDEX_NAME)
-        index.delete(delete_all=True)
+        stats = index.describe_index_stats()
+        namespaces = stats.namespaces.keys()
+        for ns in namespaces:
+            index.delete(delete_all=True, namespace=ns)
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Error deleting all vectorstores: {e}")
         return False

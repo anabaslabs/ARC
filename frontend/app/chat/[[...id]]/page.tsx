@@ -58,6 +58,12 @@ export default function ChatPage() {
       } else {
         setMessages([]);
       }
+      const savedFiles = localStorage.getItem(`arc_files_${chatId}`);
+      if (savedFiles) {
+        setUploadedFiles(JSON.parse(savedFiles));
+      } else {
+        setUploadedFiles([]);
+      }
     } else {
       setActiveChatId(null);
       setView("upload");
@@ -144,6 +150,8 @@ export default function ChatPage() {
       ];
       setMessages(initMessages);
       localStorage.setItem(`arc_messages_${newChatId}`, JSON.stringify(initMessages));
+      const fileMetadata = uploadedFiles.map(f => ({ name: f.name, size: f.size }));
+      localStorage.setItem(`arc_files_${newChatId}`, JSON.stringify(fileMetadata));
       setActiveChatId(newChatId);
       setView("chat");
       window.history.pushState(null, "", `/chat/${newChatId}`);
@@ -230,7 +238,7 @@ export default function ChatPage() {
       setUploadedFiles([]);
       setMessages([]);
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("arc_messages_")) {
+        if (key.startsWith("arc_messages_") || key.startsWith("arc_files_")) {
           localStorage.removeItem(key);
         }
       });
@@ -251,6 +259,7 @@ export default function ChatPage() {
 
       setChats((prev) => prev.filter((c) => c.id !== id));
       localStorage.removeItem(`arc_messages_${id}`);
+      localStorage.removeItem(`arc_files_${id}`);
       if (activeChatId === id) {
         handleNewChat();
       }
@@ -275,7 +284,12 @@ export default function ChatPage() {
             } else {
               setMessages([]);
             }
-            setUploadedFiles([]);
+            const savedFiles = localStorage.getItem(`arc_files_${id}`);
+            if (savedFiles) {
+              setUploadedFiles(JSON.parse(savedFiles));
+            } else {
+              setUploadedFiles([]);
+            }
             window.history.pushState(null, "", `/chat/${id}`);
           }}
           onNewChat={handleNewChat}
