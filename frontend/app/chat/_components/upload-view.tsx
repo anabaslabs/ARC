@@ -41,12 +41,11 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
   };
 
   return (
-    <div className="bg-sidebar flex flex-1 flex-col items-center justify-center space-y-6 p-8 text-center">
-      <div className="space-y-2">
-        <h2 className="text-4xl font-bold tracking-tight">Upload & Ask</h2>
-        <p className="text-muted-foreground mx-auto max-w-md text-lg">
-          Upload your documents and let AI help you find insights instantly.
-        </p>
+    <div className="bg-sidebar flex flex-1 flex-col items-center justify-center space-y-6 p-4 text-center sm:p-8">
+      <div className="mb-6 sm:mb-10">
+        <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
+          Upload & Ask
+        </h2>
       </div>
 
       <input
@@ -67,7 +66,7 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          "hover:bg-accent/50 group flex aspect-2/1 w-full max-w-2xl cursor-pointer flex-col items-center justify-center gap-4 border-2 border-dashed transition-all",
+          "hover:bg-accent/50 group flex aspect-video w-[90%] max-w-md cursor-pointer flex-col items-center justify-center gap-4 border-2 border-dashed transition-all sm:aspect-2/1 sm:w-full sm:max-w-2xl",
           isUploading && "cursor-not-allowed opacity-50",
           isDragging && "border-primary bg-primary/5"
         )}
@@ -80,10 +79,10 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
           )}
         </div>
         <div className="space-y-2">
-          <p className="text-lg font-semibold">
+          <p className="text-base font-semibold sm:text-lg">
             {isUploading ? "Uploading..." : "Click or drag files here"}
           </p>
-          <div className="text-muted-foreground space-y-1 text-sm">
+          <div className="text-muted-foreground space-y-1 text-xs sm:text-sm">
             <p>PDF, DOCX, XLSX, CSV, PPTX, TXT, MD, JSON</p>
             <p>(Up to 6 files • Max 5MB per file)</p>
           </div>

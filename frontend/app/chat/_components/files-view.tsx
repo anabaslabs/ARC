@@ -35,8 +35,10 @@ export function FilesView({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="bg-sidebar relative flex flex-1 flex-col items-center justify-center space-y-8 p-8">
-      <h2 className="text-3xl font-bold tracking-tight">Upload & Ask</h2>
+    <div className="bg-sidebar relative flex flex-1 flex-col items-center justify-center space-y-4 p-4 sm:space-y-8 sm:p-8">
+      <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+        Upload & Ask
+      </h2>
 
       <input
         type="file"
@@ -100,7 +102,7 @@ export function FilesView({
       <div className="flex flex-col items-center gap-4">
         <Button
           size="lg"
-          className="group min-w-50 gap-2 px-8"
+          className="group w-full gap-2 px-8 sm:w-auto"
           onClick={onStartChat}
           disabled={isUploading}
         >

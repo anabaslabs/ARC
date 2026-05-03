@@ -205,7 +205,7 @@ export function ChatView({
       <div className="pointer-events-none absolute right-0 bottom-0 left-0 flex flex-col">
         <div className="from-sidebar h-10 bg-linear-to-t to-transparent" />
         <div className="bg-sidebar pointer-events-auto px-4 pb-3">
-          <div className="group relative mx-auto max-w-4xl">
+          <div className="group relative mx-auto w-[95%] max-w-4xl sm:w-full">
             <div className="absolute top-0 bottom-0 left-3 z-10 flex items-center">
               <Button
                 size="icon"
@@ -233,7 +233,7 @@ export function ChatView({
                 }
               }}
               placeholder="Ask ARC..."
-              className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-14 resize-none overflow-y-auto rounded-xl border-2 py-4.5 pr-12 pl-12 text-sm backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 [&::-webkit-scrollbar]:hidden"
+              className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-12 resize-none overflow-y-auto rounded-xl border-2 py-3 pr-12 pl-12 text-sm backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 sm:min-h-14 sm:py-4.5 [&::-webkit-scrollbar]:hidden"
             />
             <div className="absolute top-0 right-3 bottom-0 flex items-center">
               <Button
