@@ -47,3 +47,8 @@ PROMPT = (
     "If you cannot answer from the context, say so honestly. "
     "Context: {context} Question: {question}"
 )
+
+CREATORS = [
+    {"name": "Krishnendu Das", "url": "https://itskdhere.com"},
+    {"name": "Saptarshi Roy", "url": "https://hirishi.in"}
+]

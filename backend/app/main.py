@@ -3,7 +3,7 @@ from app.routes.delete import router as delete_router
 from app.routes.clear import router as clear_router
 from app.routes.chats import router as chats_router
 from app.routes.upload import router as upload_router
-from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, ENV
+from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS, ENV, CREATORS
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -36,7 +36,12 @@ app.include_router(chats_router)
 
 @app.get("/")
 async def root():
-    return {"name": APP_NAME, "version": APP_VERSION, "status": "OK"}
+    return {
+        "name": APP_NAME,
+        "version": APP_VERSION,
+        "status": "OK",
+        "creators": CREATORS
+    }
 
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -45,8 +50,3 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
     return FileResponse(os.path.join("app", "static", "favicon.ico"))
-
-
-@app.get('/creator')
-async def creator():
-    return {"krishnendu Das": "https://itskdhere.com", "Saptarshi Roy": "https://hirishi.in"}
