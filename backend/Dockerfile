@@ -13,14 +13,16 @@ ENV ENV=production \
   PYTHONDONTWRITEBYTECODE=1
 
 RUN useradd -m -u 1000 user
+WORKDIR /home/user/app
+
+COPY requirements.txt .
+RUN uv pip install --no-cache --system -r requirements.txt
+
+RUN chown -R user:user /home/user/app
+
 USER user
 ENV HOME=/home/user \
   PATH=/home/user/.local/bin:$PATH
-
-WORKDIR $HOME/app
-
-COPY --chown=user requirements.txt .
-RUN uv pip install --no-cache --system -r requirements.txt
 
 COPY --chown=user app app
 
