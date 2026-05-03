@@ -72,6 +72,26 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  @keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      opacity: 1;
+    }
+    20%, 24%, 55% {
+      opacity: 0.5;
+    }
+    22% {
+      opacity: 0.3;
+    }
+    82%, 84%, 86% {
+      opacity: 0.9;
+    }
+    83%, 85% {
+      opacity: 0.2;
+    }
+  }
+
+  --animate-flicker: flicker 3s linear infinite;
 }
 
 :root {
