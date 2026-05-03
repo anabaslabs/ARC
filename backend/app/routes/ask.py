@@ -10,6 +10,7 @@ router = APIRouter()
 
 class AskRequest(BaseModel):
     question: str
+    session_id: str = "default_index"
 
 
 class AskResponse(BaseModel):
@@ -18,7 +19,7 @@ class AskResponse(BaseModel):
 
 @router.post("/ask")
 async def ask(body: AskRequest) -> AskResponse:
-    store = get_vectorstore()
+    store = get_vectorstore(body.session_id)
     if not store:
         raise HTTPException(404, "No documents ingested yet.")
 

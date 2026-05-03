@@ -1,5 +1,7 @@
 from app.routes.ask import router as ask_router
 from app.routes.delete import router as delete_router
+from app.routes.clear import router as clear_router
+from app.routes.chats import router as chats_router
 from app.routes.upload import router as upload_router
 from app.config import APP_NAME, APP_VERSION
 from fastapi import FastAPI
@@ -14,7 +16,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -22,6 +24,8 @@ app.add_middleware(
 app.include_router(ask_router)
 app.include_router(upload_router)
 app.include_router(delete_router)
+app.include_router(clear_router)
+app.include_router(chats_router)
 
 
 @app.get("/")

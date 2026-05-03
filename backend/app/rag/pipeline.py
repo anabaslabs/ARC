@@ -37,14 +37,14 @@ def _clean_docs(docs: list[Document]) -> list[Document]:
     return docs
 
 
-def process_file(path: str, ext: str) -> int:
+def process_file(path: str, ext: str, session_id: str = "default_index") -> int:
     loader = LOADERS.get(ext.lower())
     if loader is None:
         raise ValueError(f"Unsupported file type: .{ext}")
     docs = loader(path)
     docs = _clean_docs(docs)
     chunks = chunk_docs(docs)
-    add_documents(chunks)
+    add_documents(chunks, session_id=session_id)
     return len(chunks)
 
 

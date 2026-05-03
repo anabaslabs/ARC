@@ -4,6 +4,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 embeddings = GoogleGenerativeAIEmbeddings(
     model=EMBED_MODEL,
     google_api_key=GOOGLE_API_KEY,
+    output_dimensionality=768,
 )
 
 

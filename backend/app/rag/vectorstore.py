@@ -1,50 +1,49 @@
 import os
 import time
-import shutil
 
 from app.rag.embedder import embeddings
-from langchain_community.vectorstores import FAISS
+from langchain_pinecone import PineconeVectorStore
 from langchain_core.documents import Document
-
-PATH = "data/vectorstores/default_index"
-
-
-def get_vectorstore() -> FAISS | None:
-    if os.path.exists(PATH):
-        try:
-            return FAISS.load_local(PATH, embeddings, allow_dangerous_deserialization=True)
-        except Exception:
-            return None
-    return None
+from app.config import PINECONE_API_KEY, PINECONE_INDEX_NAME
+from pinecone import Pinecone
 
 
-def add_documents(chunks: list[Document]) -> None:
+def get_vectorstore(session_id: str = "default_index") -> PineconeVectorStore:
+    return PineconeVectorStore(
+        index_name=PINECONE_INDEX_NAME,
+        embedding=embeddings,
+        pinecone_api_key=PINECONE_API_KEY,
+        namespace=session_id,
+    )
+
+
+def add_documents(chunks: list[Document], session_id: str = "default_index") -> None:
     if not chunks:
         raise ValueError("No text could be extracted from the file.")
 
-    store = get_vectorstore()
-
-    batch_size = 50
+    store = get_vectorstore(session_id)
+    batch_size = 100
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
-        
-        if store:
-            store.add_documents(batch)
-        else:
-            store = FAISS.from_documents(batch, embeddings)
-
+        store.add_documents(batch)
         if i + batch_size < len(chunks):
-            time.sleep(1)
-
-    os.makedirs(os.path.dirname(PATH), exist_ok=True)
-    store.save_local(PATH)
+            time.sleep(0.5)
 
 
-def delete_vectorstore() -> bool:
-    if os.path.exists(PATH):
-        shutil.rmtree(PATH)
+def delete_vectorstore(session_id: str) -> bool:
+    try:
+        store = get_vectorstore(session_id)
+        store.delete(delete_all=True)
         return True
-    return False
+    except Exception:
+        return False
 
 
-# Antigravity -> Claude Sonnet 4.6 (Thinking)
+def delete_all_vectorstores() -> bool:
+    try:
+        pc = Pinecone(api_key=PINECONE_API_KEY)
+        index = pc.Index(PINECONE_INDEX_NAME)
+        index.delete(delete_all=True)
+        return True
+    except Exception:
+        return False

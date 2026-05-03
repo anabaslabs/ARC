@@ -9,6 +9,8 @@ APP_NAME = "ARC API"
 APP_VERSION = "2.0.0"
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME")
 
 EMBED_MODEL = "models/gemini-embedding-001"
 CHAT_MODEL = "gemini-2.5-flash-lite"
