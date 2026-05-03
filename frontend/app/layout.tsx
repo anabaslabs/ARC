@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Lexend, JetBrains_Mono } from "next/font/google";
-import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const lexend = Lexend({
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         lexend.variable,
         jetbrainsMono.variable,
@@ -37,8 +39,15 @@ export default function RootLayout({
         "antialiased"
       )}
     >
-      <body className="dark flex min-h-full flex-col">
-        <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

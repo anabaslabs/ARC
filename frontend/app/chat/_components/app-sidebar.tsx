@@ -2,6 +2,7 @@
 
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import {
   Sidebar,
   SidebarContent,
@@ -52,20 +53,26 @@ export function AppSidebar({
     <Sidebar variant="sidebar" collapsible="icon" className="border-r">
       <SidebarHeader
         className={cn(
-          "flex h-14 flex-row items-center px-4",
+          "flex h-14 flex-row items-center justify-between px-4",
           isCollapsed && "justify-center px-0"
         )}
       >
         <SidebarTrigger
-          className={cn("size-10 [&_svg]:size-[22px]", !isCollapsed && "-ml-1")}
+          className={cn("size-10 [&_svg]:size-5.5", !isCollapsed && "-ml-1")}
         />
+        {!isCollapsed && (
+          <AnimatedThemeToggler
+            variant="rectangle"
+            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex size-10 items-center justify-center transition-colors"
+          />
+        )}
       </SidebarHeader>
       <SidebarContent className="space-y-4 p-2">
         <Button
           onClick={onNewChat}
           variant="ghost"
           className={cn(
-            "hover:bg-sidebar-accent/50 h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
+            "hover:bg-sidebar-accent h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
             isCollapsed && "justify-center p-0"
           )}
           title={isCollapsed ? "New Chat" : undefined}
@@ -74,37 +81,27 @@ export function AppSidebar({
           {!isCollapsed && <span>New Chat</span>}
         </Button>
 
-        <div className="mt-2 space-y-1">
-          {!isCollapsed && (
+        {!isCollapsed && (
+          <div className="mt-2 space-y-1">
             <p className="text-muted-foreground px-2 text-[10px] font-medium tracking-wider uppercase">
               Recent Chats
             </p>
-          )}
-          <SidebarMenu>
-            {chats.map((chat) => (
-              <SidebarMenuItem key={chat.id}>
-                <SidebarMenuButton
-                  isActive={activeChatId === chat.id}
-                  onClick={() => onChatSelect(chat.id)}
-                  className={cn(
-                    "h-10 px-2 text-sm transition-colors",
-                    "font-normal data-active:bg-transparent data-active:font-normal",
-                    activeChatId === chat.id
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                  tooltip={isCollapsed ? chat.title : undefined}
-                >
-                  {!isCollapsed && <span>{chat.title}</span>}
-                  {isCollapsed && (
-                    <div className="bg-sidebar-accent/50 flex size-8 items-center justify-center">
-                      <span className="text-[10px] font-bold">
-                        {chat.title.substring(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                </SidebarMenuButton>
-                {!isCollapsed && (
+            <SidebarMenu>
+              {chats.map((chat) => (
+                <SidebarMenuItem key={chat.id}>
+                  <SidebarMenuButton
+                    isActive={activeChatId === chat.id}
+                    onClick={() => onChatSelect(chat.id)}
+                    className={cn(
+                      "h-10 px-2 text-sm transition-colors",
+                      "font-normal data-active:bg-transparent data-active:font-normal",
+                      activeChatId === chat.id
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <span>{chat.title}</span>
+                  </SidebarMenuButton>
                   <SidebarMenuAction
                     className="hover:text-destructive size-7 opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent"
                     onClick={(e) => {
@@ -115,16 +112,16 @@ export function AppSidebar({
                     <IconTrash size={14} />
                     <span className="sr-only">Delete Chat</span>
                   </SidebarMenuAction>
-                )}
-              </SidebarMenuItem>
-            ))}
-            {chats.length === 0 && !isCollapsed && (
-              <p className="text-muted-foreground px-2 py-4 text-center text-xs italic">
-                No chats yet
-              </p>
-            )}
-          </SidebarMenu>
-        </div>
+                </SidebarMenuItem>
+              ))}
+              {chats.length === 0 && (
+                <p className="text-muted-foreground px-2 py-4 text-center text-xs italic">
+                  No chats yet
+                </p>
+              )}
+            </SidebarMenu>
+          </div>
+        )}
       </SidebarContent>
       <SidebarFooter className="border-t p-2">
         <AlertDialog>

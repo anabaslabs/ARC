@@ -1,6 +1,6 @@
 "use client";
 
-import { IconX } from "@tabler/icons-react";
+import { IconFilesOff } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UploadedFile } from "@/app/chat/types";
@@ -42,9 +42,9 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="size-10"
+            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-colors"
           >
-            <IconX size={20} />
+            <IconFilesOff className="h-4 w-4" />
           </Button>
         </div>
         <ScrollArea className="flex-1 p-2">

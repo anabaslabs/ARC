@@ -1,17 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { IconFiles } from "@tabler/icons-react";
+import { useParams } from "next/navigation";
+import { IconFilesFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
-import { useParams } from "next/navigation";
 import { AppSidebar } from "../_components/app-sidebar";
 import { UploadView } from "../_components/upload-view";
 import { FilesView } from "../_components/files-view";
 import { ChatView } from "../_components/chat-view";
 import { RightPanel } from "../_components/right-panel";
-
 import { ViewState, Message, ChatSession, UploadedFile } from "../types";
 import { MAX_FILE_SIZE, MAX_FILE_COUNT } from "../utils";
 
@@ -310,8 +308,9 @@ export default function ChatPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsRightPanelOpen(true)}
+                className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
               >
-                <IconFiles className="h-4 w-4" />
+                <IconFilesFilled className="h-4 w-4" />
               </Button>
             )}
           </header>

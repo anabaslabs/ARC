@@ -7,6 +7,7 @@ import {
   IconMicrophone,
 } from "@tabler/icons-react";
 import { Markdown } from "@/components/markdown";
+import { CopyButton } from "@/components/copy-button";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -77,15 +78,17 @@ export function ChatView({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const SpeechRecognition = (
-        (window as unknown as { SpeechRecognition: SpeechRecognitionConstructor })
-          .SpeechRecognition ||
+      const SpeechRecognition =
+        (
+          window as unknown as {
+            SpeechRecognition: SpeechRecognitionConstructor;
+          }
+        ).SpeechRecognition ||
         (
           window as unknown as {
             webkitSpeechRecognition: SpeechRecognitionConstructor;
           }
-        ).webkitSpeechRecognition
-      );
+        ).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
@@ -164,17 +167,23 @@ export function ChatView({
           {messages.map((message) => (
             <div
               key={message.id}
-              className="animate-in fade-in slide-in-from-bottom-2 flex w-full duration-300"
+              className={cn(
+                "animate-in fade-in slide-in-from-bottom-2 group flex w-full flex-col duration-300",
+                message.role === "user" ? "items-end" : "items-start"
+              )}
             >
               <div
                 className={cn(
                   "max-w-[90%] text-sm leading-relaxed",
                   message.role === "user"
-                    ? "bg-primary/10 text-foreground border-primary/20 ml-auto border px-4 py-2.5"
+                    ? "bg-primary/10 text-foreground border-primary/20 border px-4 py-2.5"
                     : "bg-transparent"
                 )}
               >
                 <Markdown content={message.content} />
+              </div>
+              <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <CopyButton content={message.content} />
               </div>
             </div>
           ))}
@@ -192,8 +201,8 @@ export function ChatView({
                 className={cn(
                   "size-8 rounded-xl border-none shadow-none transition-none",
                   isListening
-                    ? "bg-red-500/10 text-red-500 hover:!bg-red-500/10 hover:!text-red-500"
-                    : "bg-transparent text-white hover:!bg-transparent hover:!text-white"
+                    ? "bg-red-500/10 text-red-500 hover:bg-red-500/10! hover:text-red-500!"
+                    : "text-muted-foreground hover:text-foreground! bg-transparent hover:bg-transparent!"
                 )}
                 onClick={toggleListening}
                 title={isListening ? "Stop listening" : "Start voice input"}
