@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { toast } from "sonner";
 import {
   IconRotateRectangle,
   IconArrowRight,
@@ -118,6 +119,9 @@ export function ChatView({
         recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error("Speech recognition error", event.error);
           setIsListening(false);
+          if (event.error !== "no-speech") {
+            toast.error(`Voice input error: ${event.error}`);
+          }
         };
 
         recognitionRef.current = recognition;
@@ -137,7 +141,7 @@ export function ChatView({
         recognitionRef.current.start();
         setIsListening(true);
       } else {
-        alert("Speech recognition is not supported in your browser.");
+        toast.error("Speech recognition is not supported in your browser.");
       }
     }
   }, [isListening]);

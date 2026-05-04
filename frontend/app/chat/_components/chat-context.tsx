@@ -46,6 +46,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error("Failed to fetch chats:", error);
+      toast.error("Could not sync chat history.");
     } finally {
       setIsLoadingChats(false);
     }
@@ -87,6 +88,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           }
         } catch (error) {
           console.error("Failed to fetch chats:", error);
+          toast.error("Could not sync chat history.");
         } finally {
           setIsLoadingChats(false);
         }

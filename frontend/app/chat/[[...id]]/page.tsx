@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { toast } from "sonner";
 import { IconFilesFilled, IconRotateRectangle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -58,10 +59,15 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
     const selectedFiles = Array.from(files);
 
     if (currentFilesCount + selectedFiles.length > MAX_FILE_COUNT) {
+      toast.error(`You can only upload up to ${MAX_FILE_COUNT} files.`);
       return;
     }
 
     const filteredFiles = selectedFiles.filter((f) => f.size <= MAX_FILE_SIZE);
+    if (filteredFiles.length < selectedFiles.length) {
+      toast.error("Some files were skipped because they exceed the 5MB limit.");
+    }
+
     if (filteredFiles.length === 0) return;
 
     const newFiles = filteredFiles.map((f) => ({
@@ -136,6 +142,7 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
       router.push(`/chat/${newChatId}`);
     } catch (error) {
       console.error("Upload error:", error);
+      toast.error("Failed to upload files. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -193,6 +200,8 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
       );
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
+      console.error("Ask error:", error);
+      toast.error("Connection error. Please check your internet.");
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
