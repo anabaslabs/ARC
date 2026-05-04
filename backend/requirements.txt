@@ -8,7 +8,7 @@ langchain-core
 langchain-text-splitters
 langchain-google-genai
 
-pinecone-client
+pinecone
 langchain-pinecone
 
 google-generativeai
