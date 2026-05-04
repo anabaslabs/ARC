@@ -5,6 +5,7 @@ import {
   IconRotateRectangle,
   IconArrowRight,
   IconMicrophone,
+  IconMicrophoneFilled,
 } from "@tabler/icons-react";
 import { Markdown } from "@/components/markdown";
 import { CopyButton } from "@/components/copy-button";
@@ -150,12 +151,9 @@ export function ChatView({
 
   useEffect(() => {
     const scrollToBottom = () => {
-      const viewport = scrollRef.current?.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      );
-      if (viewport) {
-        viewport.scrollTo({
-          top: viewport.scrollHeight,
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({
+          top: scrollRef.current.scrollHeight,
           behavior: "smooth",
         });
       }
@@ -163,7 +161,7 @@ export function ChatView({
 
     const timeoutId = setTimeout(scrollToBottom, 100);
     return () => clearTimeout(timeoutId);
-  }, [messages]);
+  }, [messages, isAsking]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -194,11 +192,21 @@ export function ChatView({
               >
                 <Markdown content={message.content} />
               </div>
-              <div className="mt-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="mt-1">
                 <CopyButton content={message.content} />
               </div>
             </div>
           ))}
+          {isAsking && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 flex w-full flex-col items-start duration-300">
+              <div className="flex items-center gap-2 rounded-xl bg-transparent px-4 py-2.5 text-sm leading-relaxed">
+                <IconRotateRectangle className="text-primary size-4 animate-spin" />
+                <span className="text-muted-foreground animate-pulse font-medium">
+                  ARC is thinking...
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </ScrollArea>
 
@@ -206,7 +214,7 @@ export function ChatView({
         <div className="from-sidebar h-10 bg-linear-to-t to-transparent" />
         <div className="bg-sidebar pointer-events-auto px-4 pb-3">
           <div className="group relative mx-auto w-[95%] max-w-4xl sm:w-full">
-            <div className="absolute top-0 bottom-0 left-3 z-10 flex items-center">
+            <div className="absolute bottom-2 left-3 z-10 sm:bottom-3">
               <Button
                 size="icon"
                 variant="ghost"
@@ -219,7 +227,11 @@ export function ChatView({
                 onClick={toggleListening}
                 title={isListening ? "Stop listening" : "Start voice input"}
               >
-                <IconMicrophone size={18} />
+                {isListening ? (
+                  <IconMicrophoneFilled size={18} />
+                ) : (
+                  <IconMicrophone size={18} />
+                )}
               </Button>
             </div>
             <Textarea
@@ -233,9 +245,9 @@ export function ChatView({
                 }
               }}
               placeholder="Ask ARC..."
-              className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-12 resize-none overflow-y-auto rounded-xl border-2 py-3 pr-12 pl-12 text-sm backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 sm:min-h-14 sm:py-4.5 [&::-webkit-scrollbar]:hidden"
+              className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-12 resize-none overflow-y-auto rounded-xl border-2 py-3 pr-12 pl-12 text-sm leading-relaxed whitespace-pre-wrap antialiased backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 sm:min-h-14 sm:py-4.5 [&::-webkit-scrollbar]:hidden"
             />
-            <div className="absolute top-0 right-3 bottom-0 flex items-center">
+            <div className="absolute right-3 bottom-2 sm:bottom-3">
               <Button
                 size="icon"
                 className="size-8 rounded-xl"

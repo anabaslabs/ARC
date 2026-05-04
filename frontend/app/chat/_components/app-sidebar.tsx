@@ -1,6 +1,6 @@
 "use client";
 
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconPlus, IconTrash, IconRotateRectangle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import {
@@ -37,6 +37,9 @@ interface AppSidebarProps {
   onNewChat: () => void;
   onDeleteAll: () => void;
   onDeleteChat: (id: string) => void;
+  isLoading?: boolean;
+  isDeletingAll?: boolean;
+  deletingChatId?: string | null;
 }
 
 export function AppSidebar({
@@ -46,6 +49,9 @@ export function AppSidebar({
   onNewChat,
   onDeleteAll,
   onDeleteChat,
+  isLoading,
+  isDeletingAll,
+  deletingChatId,
 }: AppSidebarProps) {
   const { state, open, isMobile, setOpen } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
@@ -120,37 +126,59 @@ export function AppSidebar({
               Recent Chats
             </p>
             <SidebarMenu>
-              {chats.map((chat) => (
-                <SidebarMenuItem key={chat.id}>
-                  <SidebarMenuButton
-                    isActive={activeChatId === chat.id}
-                    onClick={() => onChatSelect(chat.id)}
-                    className={cn(
-                      "h-10 px-2 text-sm transition-colors",
-                      "font-normal data-active:bg-transparent data-active:font-normal",
-                      activeChatId === chat.id
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <span>{chat.title}</span>
-                  </SidebarMenuButton>
-                  <SidebarMenuAction
-                    className="hover:text-destructive size-7 opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteChat(chat.id);
-                    }}
-                  >
-                    <IconTrash size={14} />
-                    <span className="sr-only">Delete Chat</span>
-                  </SidebarMenuAction>
-                </SidebarMenuItem>
-              ))}
-              {chats.length === 0 && (
-                <p className="text-muted-foreground px-2 py-4 text-center text-xs italic">
-                  No chats yet
-                </p>
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-8">
+                  <IconRotateRectangle className="text-primary size-6 animate-spin" />
+                  <p className="text-muted-foreground animate-pulse text-[10px] font-medium tracking-wider uppercase">
+                    Loading chats...
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {chats.map((chat) => (
+                    <SidebarMenuItem key={chat.id}>
+                      <SidebarMenuButton
+                        isActive={activeChatId === chat.id}
+                        onClick={() => onChatSelect(chat.id)}
+                        className={cn(
+                          "h-10 px-2 text-sm transition-colors",
+                          "font-normal data-active:bg-transparent data-active:font-normal",
+                          activeChatId === chat.id
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <span>{chat.title}</span>
+                      </SidebarMenuButton>
+                      <SidebarMenuAction
+                        className={cn(
+                          "hover:text-destructive size-7 opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent",
+                          deletingChatId === chat.id && "opacity-100"
+                        )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteChat(chat.id);
+                        }}
+                        disabled={deletingChatId === chat.id}
+                      >
+                        {deletingChatId === chat.id ? (
+                          <IconRotateRectangle
+                            size={14}
+                            className="animate-spin"
+                          />
+                        ) : (
+                          <IconTrash size={14} />
+                        )}
+                        <span className="sr-only">Delete Chat</span>
+                      </SidebarMenuAction>
+                    </SidebarMenuItem>
+                  ))}
+                  {chats.length === 0 && (
+                    <p className="text-muted-foreground px-2 py-4 text-center text-xs italic">
+                      No chats yet
+                    </p>
+                  )}
+                </>
               )}
             </SidebarMenu>
           </div>
@@ -165,11 +193,17 @@ export function AppSidebar({
                 "text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
                 isCollapsed && "justify-center p-0"
               )}
-              disabled={chats.length === 0}
+              disabled={chats.length === 0 || isDeletingAll}
               title={isCollapsed ? "Delete All" : undefined}
             >
-              <IconTrash size={20} stroke={2.5} />
-              {!isCollapsed && <span>Delete All</span>}
+              {isDeletingAll ? (
+                <IconRotateRectangle size={20} className="animate-spin" />
+              ) : (
+                <IconTrash size={20} stroke={2.5} />
+              )}
+              {!isCollapsed && (
+                <span>{isDeletingAll ? "Deleting..." : "Delete All"}</span>
+              )}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

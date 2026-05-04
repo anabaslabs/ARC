@@ -74,3 +74,18 @@ export const truncateFileName = (name: string, maxLength = 24) => {
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 export const MAX_FILE_COUNT = 6;
+
+export const getUserId = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("arc_user_id");
+};
+
+export const formatChatTitle = (timestampStr: string) => {
+  const timestamp = parseInt(timestampStr);
+  if (isNaN(timestamp)) return "New Analysis";
+  const date = new Date(timestamp);
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
+  return `Analysis ${hh}:${mm}:${ss}`;
+};

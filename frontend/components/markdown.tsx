@@ -20,7 +20,6 @@ export function Markdown({ content, className }: MarkdownProps) {
         "prose prose-sm dark:prose-invert max-w-none wrap-break-word",
         "prose-p:leading-relaxed prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-none",
         "prose-code:bg-muted/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none",
-        "prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5",
         "prose-headings:font-semibold prose-headings:tracking-tight",
         className
       )}
@@ -93,6 +92,16 @@ export function Markdown({ content, className }: MarkdownProps) {
               className="border-primary/30 text-muted-foreground my-4 border-l-4 pl-4 italic"
             />
           ),
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ul: ({ node, ...props }) => (
+            <ul {...props} className="my-2 list-disc pl-6" />
+          ),
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ol: ({ node, ...props }) => (
+            <ol {...props} className="my-2 list-decimal pl-6" />
+          ),
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          li: ({ node, ...props }) => <li {...props} className="my-0.5" />,
         }}
       >
         {content}

@@ -20,8 +20,8 @@ EMBED_MODEL = "models/gemini-embedding-001"
 CHAT_MODEL = "gemini-2.5-flash-lite"
 
 TOP_K = 10
-CHUNK_SIZE = 1500
-CHUNK_OVERLAP = 200
+CHUNK_SIZE = 800
+CHUNK_OVERLAP = 100
 UPLOAD_BATCH_SIZE = 100
 
 MAX_FILE_COUNT = 6
@@ -49,6 +49,6 @@ PROMPT = (
 )
 
 CREATORS = [
-    {"name": "Krishnendu Das", "url": "https://itskdhere.com"},
-    {"name": "Saptarshi Roy", "url": "https://hirishi.in"}
+    {"Krishnendu Das" : "https://itskdhere.com"},
+    {"Saptarshi Roy" : "https://hirishi.in"}
 ]

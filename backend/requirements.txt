@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 python-multipart
+python-dotenv
 
 langchain-community
 langchain-core
@@ -12,12 +13,10 @@ langchain-pinecone
 
 google-generativeai
 
-pdfplumber
+langchain-pymupdf4llm
 docx2txt
 openpyxl
 python-pptx
 unstructured
 markdown
 jq
-
-python-dotenv

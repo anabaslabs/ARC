@@ -3,34 +3,22 @@
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { toast } from "sonner";
-import { IconFilesFilled } from "@tabler/icons-react";
+import { IconFilesFilled, IconRotateRectangle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "../_components/app-sidebar";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { UploadView } from "../_components/upload-view";
 import { FilesView } from "../_components/files-view";
 import { ChatView } from "../_components/chat-view";
 import { RightPanel } from "../_components/right-panel";
+import { useChat } from "../_components/chat-context";
 import { ViewState, Message, ChatSession, UploadedFile } from "../types";
-import { MAX_FILE_SIZE, MAX_FILE_COUNT } from "../utils";
+import { MAX_FILE_SIZE, MAX_FILE_COUNT, formatChatTitle } from "../utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-function ChatInterface({
-  initialChatId,
-  chats,
-  setChats,
-}: {
-  initialChatId?: string;
-  chats: ChatSession[];
-  setChats: React.Dispatch<React.SetStateAction<ChatSession[]>>;
-}) {
+function ChatInterface({ initialChatId }: { initialChatId?: string }) {
   const router = useRouter();
+  const { userId, chats, setChats } = useChat();
 
   const [view, setView] = React.useState<ViewState>(
     initialChatId ? "chat" : "upload"
@@ -70,18 +58,10 @@ function ChatInterface({
     const selectedFiles = Array.from(files);
 
     if (currentFilesCount + selectedFiles.length > MAX_FILE_COUNT) {
-      toast.warning(`Maximum of ${MAX_FILE_COUNT} files allowed.`);
       return;
     }
 
-    const filteredFiles = selectedFiles.filter((f) => {
-      if (f.size > MAX_FILE_SIZE) {
-        toast.error(`"${f.name}" is too large (max 5MB).`);
-        return false;
-      }
-      return true;
-    });
-
+    const filteredFiles = selectedFiles.filter((f) => f.size <= MAX_FILE_SIZE);
     if (filteredFiles.length === 0) return;
 
     const newFiles = filteredFiles.map((f) => ({
@@ -103,33 +83,28 @@ function ChatInterface({
   };
 
   const startChat = async () => {
-    if (uploadedFiles.length === 0 || isUploading) return;
+    if (uploadedFiles.length === 0 || isUploading || !userId) return;
 
     setIsUploading(true);
     const newChatId = Date.now().toString();
     const formData = new FormData();
     uploadedFiles.forEach((f) => {
-      if (f.file) {
-        formData.append("files", f.file);
-      }
+      if (f.file) formData.append("files", f.file);
     });
     formData.append("session_id", newChatId);
 
     try {
       const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
+        headers: { "X-User-ID": userId },
         body: formData,
       });
 
       if (!response.ok) throw new Error("Upload failed");
 
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
       const newChat: ChatSession = {
         id: newChatId,
-        title: `Analysis ${hh}:${mm}:${ss}`,
+        title: formatChatTitle(newChatId),
         date: "Just now",
       };
 
@@ -161,14 +136,13 @@ function ChatInterface({
       router.push(`/chat/${newChatId}`);
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error("Failed to process files. Please try again.");
     } finally {
       setIsUploading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isAsking) return;
+    if (!inputValue.trim() || isAsking || !userId) return;
 
     abortControllerRef.current?.abort();
     const controller = new AbortController();
@@ -192,7 +166,10 @@ function ChatInterface({
     try {
       const response = await fetch(`${API_URL}/ask`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-ID": userId,
+        },
         body: JSON.stringify({
           question: inputValue,
           session_id: initialChatId || "default_index",
@@ -216,18 +193,12 @@ function ChatInterface({
       );
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
-      console.error("Ask error:", error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: "Sorry, I encountered an error while processing your request.",
       };
-      const updatedMessages = [...newMessages, errorMessage];
-      setMessages(updatedMessages);
-      localStorage.setItem(
-        `arc_messages_${initialChatId}`,
-        JSON.stringify(updatedMessages)
-      );
+      setMessages([...newMessages, errorMessage]);
     } finally {
       if (abortControllerRef.current === controller) {
         setIsAsking(false);
@@ -245,8 +216,8 @@ function ChatInterface({
               <Image
                 src="/logo.png"
                 alt="ARC Logo"
-                height={512}
-                width={512}
+                height={32}
+                width={32}
                 priority
                 className="size-7 object-contain"
               />
@@ -308,95 +279,21 @@ function ChatInterface({
 
 export default function ChatPage() {
   const params = useParams();
-  const router = useRouter();
   const initialChatId = (params.id as string[] | undefined)?.[0];
+  const { userId } = useChat();
 
-  const [chats, setChats] = React.useState<ChatSession[]>([]);
-
-  React.useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const response = await fetch(`${API_URL}/chats`);
-        if (response.ok) {
-          const data = await response.json();
-          setChats(data.chats || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch chats:", error);
-      }
-    };
-    fetchChats();
-  }, []);
-
-  const handleChatSelect = (id: string) => {
-    router.push(`/chat/${id}`);
-  };
-
-  const handleNewChat = () => {
-    router.push("/chat");
-  };
-
-  const deleteChat = async (id: string) => {
-    try {
-      const response = await fetch(`${API_URL}/delete/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete chat");
-
-      setChats((prev) => prev.filter((c) => c.id !== id));
-      localStorage.removeItem(`arc_messages_${id}`);
-      localStorage.removeItem(`arc_files_${id}`);
-
-      if (initialChatId === id) {
-        handleNewChat();
-      }
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("Failed to delete chat data.");
-    }
-  };
-
-  const deleteAllChats = async () => {
-    try {
-      const response = await fetch(`${API_URL}/clear`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to clear index");
-
-      setChats([]);
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("arc_messages_") || key.startsWith("arc_files_")) {
-          localStorage.removeItem(key);
-        }
-      });
-      handleNewChat();
-    } catch (error) {
-      console.error("Clear error:", error);
-      toast.error("Failed to clear backend data.");
-    }
-  };
+  if (!userId) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4">
+        <IconRotateRectangle className="text-primary size-8 animate-spin" />
+        <p className="text-muted-foreground animate-pulse text-sm font-medium">
+          Initializing session...
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <SidebarProvider>
-      <div className="bg-background flex h-screen w-full overflow-hidden">
-        <AppSidebar
-          chats={chats}
-          activeChatId={initialChatId || null}
-          onChatSelect={handleChatSelect}
-          onNewChat={handleNewChat}
-          onDeleteAll={deleteAllChats}
-          onDeleteChat={deleteChat}
-        />
-
-        <ChatInterface
-          key={initialChatId || "new"}
-          initialChatId={initialChatId}
-          chats={chats}
-          setChats={setChats}
-        />
-      </div>
-    </SidebarProvider>
+    <ChatInterface key={initialChatId || "new"} initialChatId={initialChatId} />
   );
 }

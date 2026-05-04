@@ -44,7 +44,7 @@ export function UploadView({ onUpload, isUploading }: UploadViewProps) {
     <div className="bg-sidebar flex flex-1 flex-col items-center justify-center space-y-6 p-4 text-center sm:p-8">
       <div className="mb-6 sm:mb-10">
         <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-          Let's get to work...
+          Let&apos;s get to work...
         </h2>
       </div>
 

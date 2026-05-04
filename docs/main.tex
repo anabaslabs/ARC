@@ -1,0 +1,50 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=0.6in}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\titlelabel{\thetitle.\quad}
+\titlespacing*{\section}{0pt}{1.5ex plus 1ex minus .2ex}{0.8ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus 1ex minus .2ex}{0.5ex plus .2ex}
+
+\title{\vspace{-1.5cm}\textbf{ARC: Augmented Retrieval Chatbot} \\ \large Continuous Assessment Project Report \\ \normalsize Introduction to Data Science}
+\author{Krishnendu Das, Saptarshi Roy}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\vspace{-1cm}
+
+\section*{Abstract}
+The Augmented Retrieval Chatbot (ARC) is an intelligent, document-grounded conversational assistant designed to mitigate the inefficiencies of manual information extraction from large files. By leveraging Retrieval-Augmented Generation (RAG), ARC allows users to upload various document formats and query their contents using natural language. The system provides highly accurate, context-aware responses, reducing hallucinations typical of standard Large Language Models (LLMs).
+
+\section{Introduction}
+With the exponential growth of digital documents, quickly locating specific information within PDFs, Word documents, or spreadsheets has become a significant challenge. Standard LLMs lack knowledge of proprietary or recently created documents. ARC addresses this by integrating a RAG architecture, which bridges the gap between static documents and dynamic generative AI capabilities, allowing users to ''chat'' directly with their data.
+
+\section{System Architecture \& Tech Stack}
+ARC is built using a modern, decoupled client-server architecture:
+\begin{itemize}[nosep, leftmargin=*]
+    \item \textbf{Frontend:} Developed with \textbf{Next.js} and \textbf{React}, offering a highly responsive user interface with \textbf{Tailwind CSS}. It includes modern features like voice-to-text input.
+    \item \textbf{Backend:} Powered by \textbf{FastAPI} (Python) for robust and asynchronous request handling.
+    \item \textbf{AI/ML Framework:} \textbf{LangChain} orchestrates the LLM pipeline.
+    \item \textbf{Vector Database:} \textbf{Pinecone} is utilized for storing high-dimensional document embeddings and performing rapid semantic similarity searches.
+    \item \textbf{Generative Models:} \textbf{Google Generative AI (Gemini)} is employed for both creating text embeddings and generating final responses.
+\end{itemize}
+
+\section{Implementation: The RAG Pipeline}
+The core of ARC is its robust Retrieval-Augmented Generation pipeline, built to efficiently process and query complex documents. It operates in the following detailed phases:
+\begin{enumerate}[nosep, leftmargin=*]
+    \item \textbf{Data Ingestion \& Parsing:} The pipeline accepts diverse unstructured formats (PDF, DOCX, XLSX, Markdown, TXT). Specialized loaders (such as \texttt{pdfplumber} for PDFs, \texttt{docx2txt} for Word, and \texttt{openpyxl} for Excel) extract raw text while preserving essential metadata and structural integrity.
+    \item \textbf{Chunking \& Data Cleaning:} To fit within the LLM's context window limitations and improve retrieval precision, the extracted text is sanitized. It is then partitioned using LangChain's \texttt{RecursiveCharacterTextSplitter} into smaller, overlapping chunks (e.g., 1000 characters with a 200-character overlap) to ensure that semantic context is not lost at the boundaries.
+    \item \textbf{Embedding \& Vector Storage:} Each text chunk is transformed into a high-dimensional dense vector representation using the \texttt{models/embedding-001} model from Google Generative AI. These embeddings, along with their source metadata, are securely upserted into a \textbf{Pinecone} vector index, optimized for scalable similarity search.
+    \item \textbf{Semantic Retrieval \& Generation:} When a user submits a query, it is embedded using the same model. Pinecone performs a cosine similarity search to retrieve the top-$K$ most relevant document chunks. Finally, these chunks are injected as context into a strictly crafted prompt. The generative LLM (Gemini) then synthesizes a coherent, grounded answer based \textit{only} on the retrieved context, effectively eliminating hallucinations.
+\end{enumerate}
+
+\section{Conclusion \& Future Work}
+Developing ARC provided deep insights into the practical challenges of RAG systems, such as optimizing chunk sizes and handling varied document layouts. Future iterations aim to incorporate advanced re-ranking mechanisms to improve retrieval precision, multi-modal support for interpreting charts within documents, and local LLM options for environments with strict data privacy requirements.
+
+\end{document}
