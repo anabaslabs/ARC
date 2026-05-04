@@ -1,7 +1,12 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "katex/dist/katex.min.css";
+
+* {
+  tab-size: 2;
+}
 
 .hljs {
   @apply text-foreground bg-transparent;
