@@ -14,6 +14,10 @@ google-generativeai
 
 langchain-pymupdf4llm
 unstructured[csv,docx,pptx,xlsx]
-python-pptx
+python-pptx 
+python-pptx #HF
+python-magic #HF
+docx2txt #HF
+openpyxl #HF
 markdown
 jq
