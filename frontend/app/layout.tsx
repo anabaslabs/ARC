@@ -1,6 +1,11 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Lexend, JetBrains_Mono, Noto_Sans_Bengali, Noto_Sans } from "next/font/google";
+import {
+  Lexend,
+  JetBrains_Mono,
+  Noto_Sans_Bengali,
+  Noto_Sans,
+} from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
