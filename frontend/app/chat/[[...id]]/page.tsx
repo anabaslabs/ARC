@@ -218,7 +218,7 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
   return (
     <>
       <SidebarInset className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-2 shadow-sm">
+        <header className="bg-sidebar border-border/50 flex h-14 shrink-0 items-center justify-between gap-2 border-b px-2">
           <div className="flex items-center gap-1">
             <SidebarTrigger className="md:hidden" />
             <div className="flex items-center gap-2 px-2">
@@ -238,9 +238,9 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
               variant="ghost"
               size="icon"
               onClick={() => setIsRightPanelOpen(true)}
-              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-colors"
             >
-              <IconFilesFilled className="h-4 w-4" />
+              <IconFilesFilled size={20} />
             </Button>
           )}
         </header>

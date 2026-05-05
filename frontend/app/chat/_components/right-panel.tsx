@@ -42,7 +42,7 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
 
       <aside
         className={cn(
-          "bg-sidebar md:bg-muted md:dark:bg-muted/30 fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] flex-col border-l shadow-sm transition-[left,right,width] duration-200 ease-in-out sm:w-(--sidebar-width) md:z-10",
+          "bg-sidebar md:bg-muted md:dark:bg-muted/30 fixed inset-y-0 right-0 z-50 flex h-svh w-[85vw] flex-col border-l transition-[left,right,width] duration-200 ease-in-out sm:w-(--sidebar-width) md:z-10",
           !isOpen && "-right-full sm:-right-(--sidebar-width)"
         )}
       >
@@ -54,17 +54,17 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
             onClick={onClose}
             className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-colors"
           >
-            <IconFilesOff className="h-4 w-4" />
+            <IconFilesOff size={24} />
           </Button>
         </div>
         <ScrollArea className="flex-1 p-2">
           <div className="space-y-1">
             {files.map((file, i) => (
               <div key={i} className="group flex h-12 items-center gap-3 p-2">
-                <div className="bg-background border-border/50 flex size-10 shrink-0 items-center justify-center border">
+                <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center">
                   {(() => {
                     const Icon = getFileIcon(file.name);
-                    return <Icon size={20} className="text-muted-foreground" />;
+                    return <Icon size={20} />;
                   })()}
                 </div>
                 <div className="min-w-0 flex-1">
