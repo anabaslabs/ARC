@@ -7,6 +7,7 @@ import {
   IconArrowRight,
   IconMicrophone,
   IconMicrophoneFilled,
+  IconFileTextSpark,
 } from "@tabler/icons-react";
 import { Markdown } from "@/components/markdown";
 import { CopyButton } from "@/components/copy-button";
@@ -218,24 +219,18 @@ export function ChatView({
         <div className="from-sidebar h-10 bg-linear-to-t to-transparent" />
         <div className="bg-sidebar pointer-events-auto px-4 pb-3">
           <div className="group relative mx-auto w-[95%] max-w-4xl sm:w-full">
-            <div className="absolute bottom-2 left-3 z-10 sm:bottom-3">
+            <div className="absolute bottom-2 left-3 z-10 flex items-center sm:bottom-3">
               <Button
                 size="icon"
                 variant="ghost"
-                className={cn(
-                  "size-8 rounded-xl border-none shadow-none transition-none",
-                  isListening
-                    ? "bg-red-500/10 text-red-500 hover:bg-red-500/10! hover:text-red-500!"
-                    : "text-muted-foreground hover:text-foreground! bg-transparent hover:bg-transparent!"
-                )}
-                onClick={toggleListening}
-                title={isListening ? "Stop listening" : "Start voice input"}
+                className="text-primary hover:text-primary! bg-primary/5 dark:bg-primary/10 hover:bg-primary/10! border-primary/20 size-8 rounded-xl border shadow-none transition-none dark:text-emerald-400"
+                onClick={() => {
+                  onInputChange("Summarize the uploaded documents.");
+                  setTimeout(onSendMessage, 0);
+                }}
+                title="Summarize documents"
               >
-                {isListening ? (
-                  <IconMicrophoneFilled size={20} />
-                ) : (
-                  <IconMicrophone size={20} />
-                )}
+                <IconFileTextSpark size={20} />
               </Button>
             </div>
             <Textarea
@@ -249,14 +244,33 @@ export function ChatView({
                 }
               }}
               placeholder="Ask ARC..."
-              className="border-border/40 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-12 resize-none overflow-y-auto rounded-xl border-2 py-3 pr-12 pl-12 text-sm leading-relaxed whitespace-pre-wrap antialiased backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 sm:min-h-14 sm:py-4.5 [&::-webkit-scrollbar]:hidden"
+              className="border-primary/20 bg-background/98 focus-visible:border-primary/50 max-h-40 min-h-12 resize-none overflow-y-auto rounded-xl border py-3 pr-22 pl-13 text-sm leading-relaxed whitespace-pre-wrap antialiased backdrop-blur-sm transition-all [-ms-overflow-style:none] [scrollbar-width:none] focus-visible:ring-0 sm:min-h-14 sm:py-4.5 [&::-webkit-scrollbar]:hidden"
             />
-            <div className="absolute right-3 bottom-2 sm:bottom-3">
+            <div className="absolute right-3 bottom-2 z-10 flex items-center gap-1.5 sm:bottom-3">
+              <Button
+                size="icon"
+                variant="ghost"
+                className={cn(
+                  "border-primary/20 size-8 rounded-xl border shadow-none transition-none",
+                  isListening
+                    ? "bg-red-500/10 text-red-500 hover:bg-red-500/10! hover:text-red-500!"
+                    : "text-primary hover:text-primary! bg-primary/5 dark:bg-primary/10 hover:bg-primary/10! dark:text-emerald-400"
+                )}
+                onClick={toggleListening}
+                title={isListening ? "Stop listening" : "Start voice input"}
+              >
+                {isListening ? (
+                  <IconMicrophoneFilled size={20} />
+                ) : (
+                  <IconMicrophone size={20} />
+                )}
+              </Button>
               <Button
                 size="icon"
                 className="size-8 rounded-xl"
                 disabled={!inputValue.trim() || isAsking}
                 onClick={handleSend}
+                title="Send message"
               >
                 {isAsking ? (
                   <IconRotateRectangle className="size-4 animate-spin" />

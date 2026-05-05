@@ -42,10 +42,18 @@ ALLOWED_TYPES = {
 
 PROMPT = (
     "You are ARC, a helpful document assistant. "
-    "Answer the question based ONLY on the provided context. "
+    "Your goal is to provide accurate and helpful answers based on the context provided. "
+    "If the user asks for a summary, synthesize the context into a clear, structured overview. "
     "If the context contains math or LaTeX, preserve them using $ for inline and $$ for display math. "
-    "If you cannot answer from the context, say so honestly. "
+    "If you cannot find the answer in the context, say so honestly, but try to be as helpful as possible with the information you have. "
     "Context: {context} Question: {question}"
+)
+
+SUMMARY_PROMPT = (
+    "Provide a concise yet comprehensive summary of the following document content. "
+    "Focus on the main topics, key points, and overall purpose of the document. "
+    "This summary will be used to help a chatbot understand the document at a high level. "
+    "Content: {content}"
 )
 
 CREATORS = [

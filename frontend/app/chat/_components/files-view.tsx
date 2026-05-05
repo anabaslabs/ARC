@@ -61,7 +61,7 @@ export function FilesView({
               isUploading && "opacity-50 grayscale-[0.5]"
             )}
           >
-            <div className="bg-primary/10 text-primary flex size-12 items-center justify-center transition-transform group-hover:scale-110">
+            <div className="bg-primary/5 dark:bg-primary/10 text-primary border-primary/20 flex size-12 items-center justify-center border transition-transform group-hover:scale-110 dark:text-emerald-400">
               {(() => {
                 const Icon = getFileIcon(file.name);
                 return <Icon size={24} />;

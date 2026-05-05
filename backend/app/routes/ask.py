@@ -24,7 +24,12 @@ class AskResponse(BaseModel):
 async def ask(body: AskRequest, user_id: str = Depends(get_user_id)) -> AskResponse:
     prefixed_session_id = f"{user_id}_{body.session_id}"
     store = get_vectorstore(prefixed_session_id)
-    docs = store.similarity_search(body.question, k=TOP_K)
+    
+    is_summary_request = any(word in body.question.lower() for word in ["summarize", "summary", "overview", "tl;dr"])
+    
+    k = TOP_K * 2 if is_summary_request else TOP_K
+    
+    docs = store.similarity_search(body.question, k=k)
 
     if not docs:
         raise HTTPException(400, "No documents found for this session.")

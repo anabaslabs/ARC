@@ -61,7 +61,7 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
           <div className="space-y-1">
             {files.map((file, i) => (
               <div key={i} className="group flex h-12 items-center gap-3 p-2">
-                <div className="bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center">
+                <div className="bg-primary/5 dark:bg-primary/10 text-primary border-primary/20 flex size-10 shrink-0 items-center justify-center border dark:text-emerald-400">
                   {(() => {
                     const Icon = getFileIcon(file.name);
                     return <Icon size={20} />;
