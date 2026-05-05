@@ -153,7 +153,9 @@ export function AppSidebar({
                       <SidebarMenuAction
                         className={cn(
                           "hover:text-destructive size-7 hover:bg-transparent data-active:bg-transparent",
-                          deletingChatId === chat.id ? "text-destructive" : "text-muted-foreground"
+                          deletingChatId === chat.id
+                            ? "text-destructive"
+                            : "text-muted-foreground"
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
