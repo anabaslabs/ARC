@@ -79,10 +79,10 @@ export function FilesView({
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-1.5 right-1.5 size-6 transition-colors"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-0 right-0 size-10 transition-colors"
                 onClick={() => onRemoveFile(i)}
               >
-                <IconX className="size-3.5" />
+                <IconX size={20} />
               </Button>
             )}
           </Card>
@@ -102,20 +102,20 @@ export function FilesView({
       <div className="flex flex-col items-center gap-4">
         <Button
           size="lg"
-          className="group w-full gap-2 px-8 sm:w-auto"
+          className="group h-10 w-full gap-2 px-8 sm:w-auto"
           onClick={onStartChat}
           disabled={isUploading}
         >
           {isUploading ? (
             <>
-              <IconRotateRectangle className="size-4 animate-spin" />
+              <IconRotateRectangle className="size-5 animate-spin" />
               <span>Processing...</span>
             </>
           ) : (
             <>
               <span>Analyze Documents</span>
               <IconArrowRight
-                size={18}
+                size={20}
                 className="transition-transform group-hover:translate-x-1"
               />
             </>

@@ -89,7 +89,7 @@ export function AppSidebar({
   }, [isMobile, setOpen]);
 
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="border-r">
+    <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader
         className={cn(
           "flex h-14 flex-row items-center justify-between px-4",
@@ -97,7 +97,7 @@ export function AppSidebar({
         )}
       >
         <SidebarTrigger
-          className={cn("size-10 [&_svg]:size-5.5", !isCollapsed && "-ml-1")}
+          className={cn("size-10 [&_svg]:size-5", !isCollapsed && "-ml-1")}
         />
         {!isCollapsed && (
           <AnimatedThemeToggler
@@ -111,8 +111,8 @@ export function AppSidebar({
           onClick={onNewChat}
           variant="ghost"
           className={cn(
-            "hover:bg-sidebar-accent h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
-            isCollapsed && "justify-center p-0"
+            "hover:bg-sidebar-accent h-10 w-full justify-start gap-3 px-2 text-sm font-bold transition-all",
+            isCollapsed && "size-10 justify-center p-0"
           )}
           title={isCollapsed ? "New Chat" : undefined}
         >
@@ -152,8 +152,10 @@ export function AppSidebar({
                       </SidebarMenuButton>
                       <SidebarMenuAction
                         className={cn(
-                          "hover:text-destructive size-7 opacity-0 group-hover/menu-item:opacity-100 hover:bg-transparent data-active:bg-transparent",
-                          deletingChatId === chat.id && "opacity-100"
+                          "hover:text-destructive size-7 hover:bg-transparent data-active:bg-transparent",
+                          deletingChatId === chat.id
+                            ? "text-destructive"
+                            : "text-muted-foreground"
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -190,8 +192,8 @@ export function AppSidebar({
             <Button
               variant="ghost"
               className={cn(
-                "text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-full justify-start gap-3 px-2 text-sm font-bold",
-                isCollapsed && "justify-center p-0"
+                "text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-full justify-start gap-3 px-2 text-sm font-bold transition-all",
+                isCollapsed && "size-10 justify-center p-0"
               )}
               disabled={chats.length === 0 || isDeletingAll}
               title={isCollapsed ? "Delete All" : undefined}

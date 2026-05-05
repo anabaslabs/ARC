@@ -232,9 +232,9 @@ export function ChatView({
                 title={isListening ? "Stop listening" : "Start voice input"}
               >
                 {isListening ? (
-                  <IconMicrophoneFilled size={18} />
+                  <IconMicrophoneFilled size={20} />
                 ) : (
-                  <IconMicrophone size={18} />
+                  <IconMicrophone size={20} />
                 )}
               </Button>
             </div>
@@ -261,7 +261,7 @@ export function ChatView({
                 {isAsking ? (
                   <IconRotateRectangle className="size-4 animate-spin" />
                 ) : (
-                  <IconArrowRight size={18} />
+                  <IconArrowRight size={20} />
                 )}
               </Button>
             </div>

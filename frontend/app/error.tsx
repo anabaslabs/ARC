@@ -19,33 +19,41 @@ export default function Error({
   return (
     <div className="bg-background flex min-h-screen flex-col items-center justify-center p-4 text-center">
       <div className="animate-in fade-in zoom-in-95 flex flex-col items-center gap-6 duration-500">
-        <div className="bg-destructive/10 flex h-20 w-20 items-center justify-center rounded-full">
+        <div className="bg-destructive/10 flex h-20 w-20 items-center justify-center">
           <IconAlertTriangle className="text-destructive h-10 w-10" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="font-lexend text-3xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="font-mono text-3xl font-bold tracking-tight sm:text-4xl">
             Something went wrong
           </h1>
           <p className="text-muted-foreground mx-auto max-w-md text-sm sm:text-base">
-            An unexpected error occurred in the application. We&apos;ve been
-            notified and are looking into it.
+            {error.message?.toLowerCase().includes("file") &&
+            (error.message?.toLowerCase().includes("limit") ||
+              error.message?.toLowerCase().includes("size") ||
+              error.message?.toLowerCase().includes("exceed"))
+              ? "File size limit exceeded. Max 5MB/File."
+              : "An unexpected error occurred"}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button onClick={reset} className="flex items-center gap-2" size="lg">
-            <IconRefresh size={18} />
+          <Button
+            onClick={reset}
+            className="flex h-10 items-center gap-2"
+            size="default"
+          >
+            <IconRefresh size={20} />
             Try again
           </Button>
           <Button
             variant="outline"
             asChild
-            size="lg"
-            className="flex items-center gap-2"
+            size="default"
+            className="flex h-10 items-center gap-2"
           >
             <Link href="/">
-              <IconHome size={18} />
+              <IconHome size={20} />
               Back to home
             </Link>
           </Button>
