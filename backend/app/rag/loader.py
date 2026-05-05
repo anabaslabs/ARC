@@ -1,6 +1,6 @@
 from langchain_community.document_loaders import (
-    CSVLoader,
-    Docx2txtLoader,
+    UnstructuredCSVLoader,
+    UnstructuredWordDocumentLoader,
     JSONLoader,
     TextLoader,
     UnstructuredExcelLoader,
@@ -30,7 +30,7 @@ def read_txt(path: str) -> list[Document]:
 # CSV
 # https://python.langchain.com/docs/integrations/document_loaders/csv
 def read_csv(path: str) -> list[Document]:
-    loader = CSVLoader(file_path=path)
+    loader = UnstructuredCSVLoader(file_path=path, mode="elements", encoding="utf-8")
     docs = loader.load()
     return docs
 
@@ -38,7 +38,7 @@ def read_csv(path: str) -> list[Document]:
 # MD
 # https://python.langchain.com/docs/integrations/document_loaders/unstructured_file/
 def read_md(path: str) -> list[Document]:
-    loader = UnstructuredMarkdownLoader(path)
+    loader = UnstructuredMarkdownLoader(path, encoding="utf-8")
     docs = loader.load()
     return docs
 
@@ -54,7 +54,7 @@ def read_json(path: str) -> list[Document]:
 # DOCX
 # https://python.langchain.com/docs/integrations/document_loaders/microsoft_word
 def read_docx(path: str) -> list[Document]:
-    loader = Docx2txtLoader(path)
+    loader = UnstructuredWordDocumentLoader(path, mode="elements")
     docs = loader.load()
     return docs
 

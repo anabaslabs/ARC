@@ -10,17 +10,9 @@ langchain-google-genai
 
 pinecone
 langchain-pinecone
-
 google-generativeai
 
 langchain-pymupdf4llm
-docx2txt
-openpyxl
-python-pptx
-unstructured
+unstructured[csv,docx,pptx,xlsx]
 markdown
 jq
-networkx
-msoffcrypto-tool
-tabulate
-pandas

@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { Lexend, JetBrains_Mono } from "next/font/google";
+import { Lexend, JetBrains_Mono, Noto_Sans_Bengali, Noto_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -17,6 +17,18 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600", "700", "800"],
+});
+
+const notoBengali = Noto_Sans_Bengali({
+  variable: "--font-noto-bengali",
+  subsets: ["bengali"],
+  weight: ["400", "700"],
+});
+
+const notoHindi = Noto_Sans({
+  variable: "--font-noto-hindi",
+  subsets: ["devanagari"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -52,6 +64,8 @@ export default function RootLayout({
       className={cn(
         lexend.variable,
         jetbrainsMono.variable,
+        notoBengali.variable,
+        notoHindi.variable,
         "font-mono",
         "h-full",
         "antialiased"
