@@ -8,6 +8,7 @@ import {
   IconMarkdown,
   IconJson,
   IconFileText,
+  IconTex,
 } from "@tabler/icons-react";
 import type { ComponentType, SVGAttributes } from "react";
 
@@ -38,6 +39,8 @@ export const getFileIcon = (fileName: string): IconComponent => {
       return IconMarkdown;
     case "json":
       return IconJson;
+    case "tex":
+      return IconTex;
     default:
       return IconFileText;
   }

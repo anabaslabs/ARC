@@ -9,6 +9,7 @@ from app.rag.loader import (
     read_pptx,
     read_txt,
     read_xlsx,
+    read_tex,
 )
 from app.rag.vectorstore import add_documents
 from langchain_core.documents import Document
@@ -24,6 +25,7 @@ LOADERS = {
     "docx": read_docx,
     "xlsx": read_xlsx,
     "pptx": read_pptx,
+    "tex": read_tex,
 }
 
 llm = ChatGoogleGenerativeAI(model=CHAT_MODEL, google_api_key=GOOGLE_API_KEY)

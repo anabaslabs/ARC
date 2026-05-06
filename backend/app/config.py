@@ -38,6 +38,7 @@ ALLOWED_TYPES = {
     "txt",
     "md",
     "json",
+    "tex",
 }
 
 PROMPT = (

@@ -74,3 +74,10 @@ def read_pptx(path: str) -> list[Document]:
     docs = loader.load()
     return docs
 
+
+# TEX
+# https://python.langchain.com/api_reference/community/document_loaders/langchain_community.document_loaders.text.TextLoader
+def read_tex(path: str) -> list[Document]:
+    loader = TextLoader(path, encoding="utf-8")
+    docs = loader.load()
+    return docs
