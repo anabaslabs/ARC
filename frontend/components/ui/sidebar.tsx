@@ -259,7 +259,7 @@ function SidebarTrigger({
       variant="ghost"
       size="icon"
       className={cn(
-        "size-10 transition-all active:translate-y-px [&_svg]:size-7",
+        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-all active:translate-y-px [&_svg]:size-7",
         className
       )}
       onClick={(event) => {

@@ -93,20 +93,21 @@ export function AppSidebar({
       <SidebarHeader
         className={cn(
           "flex h-14 flex-row items-center justify-between px-4",
-          isCollapsed && "justify-center px-0"
+          isCollapsed && "h-auto flex-col gap-2 px-0 pt-2 pb-0"
         )}
       >
         <SidebarTrigger
           className={cn("size-10 [&_svg]:size-5", !isCollapsed && "-ml-1")}
         />
-        {!isCollapsed && (
-          <AnimatedThemeToggler
-            variant="rectangle"
-            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex size-10 items-center justify-center transition-colors"
-          />
-        )}
+        <AnimatedThemeToggler
+          variant="rectangle"
+          className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex size-10 items-center justify-center transition-colors"
+          title={isCollapsed ? "Toggle theme" : undefined}
+        />
       </SidebarHeader>
-      <SidebarContent className="space-y-4 p-2">
+      <SidebarContent
+        className={cn("space-y-4 p-2", isCollapsed && "space-y-2 px-1 pt-2")}
+      >
         <Button
           onClick={onNewChat}
           variant="ghost"
@@ -186,7 +187,7 @@ export function AppSidebar({
           </div>
         )}
       </SidebarContent>
-      <SidebarFooter className="border-t p-2">
+      <SidebarFooter className={cn("border-t p-2", isCollapsed && "px-1")}>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
