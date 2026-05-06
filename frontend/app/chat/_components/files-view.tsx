@@ -79,7 +79,7 @@ export function FilesView({
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-0 right-0 size-10 transition-colors"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-0 right-0 size-10"
                 onClick={() => onRemoveFile(i)}
               >
                 <IconX size={20} />

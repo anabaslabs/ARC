@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
 import {
   IconRotateRectangle,
-  IconArrowRight,
+  IconArrowUp,
   IconMicrophone,
   IconMicrophoneFilled,
   IconFileTextSpark,
@@ -223,7 +223,7 @@ export function ChatView({
               <Button
                 size="icon"
                 variant="ghost"
-                className="text-primary hover:text-primary! bg-primary/5 dark:bg-primary/10 hover:bg-primary/10! border-primary/20 size-8 rounded-xl border shadow-none transition-none dark:text-emerald-400"
+                className="text-primary hover:text-primary! bg-primary/5 dark:bg-primary/10 hover:bg-primary/10! border-primary/20 size-8 rounded-xl border shadow-none dark:text-emerald-400"
                 onClick={() => {
                   onInputChange("Summarize the uploaded documents.");
                   setTimeout(onSendMessage, 0);
@@ -275,7 +275,7 @@ export function ChatView({
                 {isAsking ? (
                   <IconRotateRectangle className="size-4 animate-spin" />
                 ) : (
-                  <IconArrowRight size={20} />
+                  <IconArrowUp size={20} />
                 )}
               </Button>
             </div>

@@ -240,7 +240,7 @@ export const AnimatedThemeToggler = ({
       type="button"
       ref={buttonRef}
       onClick={toggleTheme}
-      className={cn(className)}
+      className={cn(className, "transition-all active:translate-y-px")}
       {...props}
     >
       {isDark ? <IconCircleHalf2 size={16} /> : <IconCircleHalf2 size={16} />}

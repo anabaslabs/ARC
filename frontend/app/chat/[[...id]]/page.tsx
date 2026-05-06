@@ -238,7 +238,7 @@ function ChatInterface({ initialChatId }: { initialChatId?: string }) {
               variant="ghost"
               size="icon"
               onClick={() => setIsRightPanelOpen(true)}
-              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-colors"
+              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10"
             >
               <IconFilesFilled size={20} />
             </Button>

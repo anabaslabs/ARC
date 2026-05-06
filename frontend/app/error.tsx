@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { IconAlertTriangle, IconRefresh, IconHome } from "@tabler/icons-react";
+import { IconAlertSquare, IconRefresh, IconHome } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function Error({
@@ -20,7 +20,7 @@ export default function Error({
     <div className="bg-background flex min-h-screen flex-col items-center justify-center p-4 text-center">
       <div className="animate-in fade-in zoom-in-95 flex flex-col items-center gap-6 duration-500">
         <div className="bg-destructive/10 flex h-20 w-20 items-center justify-center">
-          <IconAlertTriangle className="text-destructive h-10 w-10" />
+          <IconAlertSquare className="text-destructive h-10 w-10" />
         </div>
 
         <div className="space-y-2">

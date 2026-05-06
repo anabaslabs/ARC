@@ -52,7 +52,7 @@ export function RightPanel({ files, onClose, isOpen }: RightPanelProps) {
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10 transition-colors"
+            className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground size-10"
           >
             <IconFilesOff size={24} />
           </Button>

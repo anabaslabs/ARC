@@ -1,10 +1,10 @@
 import {
-  IconFileTypePdf,
-  IconFileTypeDocx,
+  IconPdf,
+  IconFileTypeDoc,
   IconFileTypeXls,
-  IconFileTypeCsv,
+  IconCsv,
   IconFileTypePpt,
-  IconFileTypeTxt,
+  IconTxt,
   IconMarkdown,
   IconJson,
   IconFileText,
@@ -20,20 +20,20 @@ export const getFileIcon = (fileName: string): IconComponent => {
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
   switch (ext) {
     case "pdf":
-      return IconFileTypePdf;
+      return IconPdf;
     case "docx":
     case "doc":
-      return IconFileTypeDocx;
+      return IconFileTypeDoc;
     case "xlsx":
     case "xls":
       return IconFileTypeXls;
     case "csv":
-      return IconFileTypeCsv;
+      return IconCsv;
     case "pptx":
     case "ppt":
       return IconFileTypePpt;
     case "txt":
-      return IconFileTypeTxt;
+      return IconTxt;
     case "md":
     case "mdx":
       return IconMarkdown;
