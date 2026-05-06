@@ -31,14 +31,14 @@ UPLOAD_DIR = "data/uploads"
 
 ALLOWED_TYPES = {
     "pdf",
-    "docx",
-    "xlsx",
     "csv",
-    "pptx",
     "txt",
     "md",
     "json",
     "tex",
+    "docx",
+    "xlsx",
+    "pptx",
 }
 
 PROMPT = (

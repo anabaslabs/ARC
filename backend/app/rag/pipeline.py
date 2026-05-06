@@ -1,15 +1,15 @@
 from app.rag.chunker import chunk_docs
 from app.rag.cleaner import clean_text, process_latex
 from app.rag.loader import (
-    read_csv,
-    read_docx,
-    read_json,
-    read_md,
     read_pdf,
-    read_pptx,
+    read_csv,
     read_txt,
-    read_xlsx,
+    read_md,
+    read_json,
     read_tex,
+    read_docx,
+    read_xlsx,
+    read_pptx,
 )
 from app.rag.vectorstore import add_documents
 from langchain_core.documents import Document
@@ -18,14 +18,14 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 LOADERS = {
     "pdf": read_pdf,
-    "txt": read_txt,
     "csv": read_csv,
+    "txt": read_txt,
     "md": read_md,
     "json": read_json,
+    "tex": read_tex,
     "docx": read_docx,
     "xlsx": read_xlsx,
     "pptx": read_pptx,
-    "tex": read_tex,
 }
 
 llm = ChatGoogleGenerativeAI(model=CHAT_MODEL, google_api_key=GOOGLE_API_KEY)

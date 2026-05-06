@@ -1,14 +1,14 @@
 import {
   IconPdf,
-  IconFileTypeDoc,
-  IconFileTypeXls,
   IconCsv,
-  IconFileTypePpt,
   IconTxt,
   IconMarkdown,
   IconJson,
-  IconFileText,
   IconTex,
+  IconFileTypeDoc,
+  IconFileTypeXls,
+  IconFileTypePpt,
+  IconFileText,
 } from "@tabler/icons-react";
 import type { ComponentType, SVGAttributes } from "react";
 
@@ -21,17 +21,8 @@ export const getFileIcon = (fileName: string): IconComponent => {
   switch (ext) {
     case "pdf":
       return IconPdf;
-    case "docx":
-    case "doc":
-      return IconFileTypeDoc;
-    case "xlsx":
-    case "xls":
-      return IconFileTypeXls;
     case "csv":
       return IconCsv;
-    case "pptx":
-    case "ppt":
-      return IconFileTypePpt;
     case "txt":
       return IconTxt;
     case "md":
@@ -41,6 +32,15 @@ export const getFileIcon = (fileName: string): IconComponent => {
       return IconJson;
     case "tex":
       return IconTex;
+    case "docx":
+    case "doc":
+      return IconFileTypeDoc;
+    case "xlsx":
+    case "xls":
+      return IconFileTypeXls;
+    case "pptx":
+    case "ppt":
+      return IconFileTypePpt;
     default:
       return IconFileText;
   }

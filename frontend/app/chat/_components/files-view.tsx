@@ -49,7 +49,7 @@ export function FilesView({
           onAddFile(e.target.files);
           e.target.value = "";
         }}
-        accept=".pdf,.docx,.xlsx,.csv,.pptx,.txt,.md,.json"
+        accept=".pdf,.csv,.txt,.md,.json,.tex,.docx,.xlsx,.pptx"
       />
 
       <div className="grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
