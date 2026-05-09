@@ -30,27 +30,31 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     null
   );
 
-  const fetchChats = React.useCallback(async () => {
-    if (!userId) return;
-    try {
-      const response = await fetch(`${API_URL}/chats`, {
-        headers: { "X-User-ID": userId },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const fetchedChats = (data.chats || []).map((chat: ChatSession) => ({
-          ...chat,
-          title: formatChatTitle(chat.id),
-        }));
-        setChats(fetchedChats);
+  const fetchChats = React.useCallback(
+    async (uid?: string) => {
+      const activeUserId = uid || userId;
+      if (!activeUserId) return;
+      try {
+        const response = await fetch(`${API_URL}/chats`, {
+          headers: { "X-User-ID": activeUserId },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const fetchedChats = (data.chats || []).map((chat: ChatSession) => ({
+            ...chat,
+            title: formatChatTitle(chat.id),
+          }));
+          setChats(fetchedChats);
+        }
+      } catch (error) {
+        console.error("Failed to fetch chats:", error);
+        toast.error("Could not sync chat history.");
+      } finally {
+        setIsLoadingChats(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch chats:", error);
-      toast.error("Could not sync chat history.");
-    } finally {
-      setIsLoadingChats(false);
-    }
-  }, [userId]);
+    },
+    [userId]
+  );
 
   React.useEffect(() => {
     const init = async () => {
@@ -70,34 +74,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         }
       }
       setUserId(id);
-
-      if (id) {
-        try {
-          const response = await fetch(`${API_URL}/chats`, {
-            headers: { "X-User-ID": id },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            const fetchedChats = (data.chats || []).map(
-              (chat: ChatSession) => ({
-                ...chat,
-                title: formatChatTitle(chat.id),
-              })
-            );
-            setChats(fetchedChats);
-          }
-        } catch (error) {
-          console.error("Failed to fetch chats:", error);
-          toast.error("Could not sync chat history.");
-        } finally {
-          setIsLoadingChats(false);
-        }
-      } else {
-        setIsLoadingChats(false);
-      }
+      if (id) await fetchChats(id);
+      else setIsLoadingChats(false);
     };
     init();
-  }, []);
+  }, [fetchChats]);
 
   const deleteChat = async (id: string) => {
     setDeletingChatId(id);

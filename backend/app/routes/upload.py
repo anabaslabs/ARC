@@ -8,11 +8,7 @@ router = APIRouter()
 
 
 @router.post("/upload")
-async def upload_files(
-    files: list[UploadFile] = File(...), 
-    session_id: str = Form(...),
-    user_id: str = Depends(get_user_id)
-) -> dict:
+async def upload_files(files: list[UploadFile] = File(...), session_id: str = Form(...), user_id: str = Depends(get_user_id)) -> dict:
     prefixed_session_id = f"{user_id}_{session_id}"
     results = []
     errors = []
@@ -26,10 +22,6 @@ async def upload_files(
     for file in files:
         original_name = file.filename or f"upload.bin"
         safe_name = os.path.basename(original_name)
-        if not safe_name:
-            errors.append({"source": original_name, "error": "Invalid filename"})
-            continue
-
         ext = safe_name.rsplit(".", 1)[-1].lower()
         if ext not in ALLOWED_TYPES:
             errors.append({"source": original_name, "error": f"Unsupported file type: .{ext}"})
