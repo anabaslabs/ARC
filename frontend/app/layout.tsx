@@ -38,20 +38,63 @@ const notoHindi = Noto_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://arc.anabaslabs.com"),
+
   title: "ARC",
-  description: "Augmented Retrieval Chatbot",
+  description: "Augmented Retrieval Chatbot. Upload, Process, Ask.",
   robots: "index, follow",
+
   creator: "Anabas Labs",
   authors: [
     { name: "Anabas Labs", url: "https://anabaslabs.com" },
     { name: "Saptarshi Roy", url: "https://hirishi.in" },
     { name: "Krishnendu Das", url: "https://itskdhere.com" },
   ],
+
+  keywords: [
+    "ARC",
+    "Augmented Retrieval Chatbot",
+    "RAG",
+    "Retrieval Augmented Generation",
+    "Anabas Labs",
+    "anabaslabs",
+    "Saptarshi Roy",
+    "saptarshiroy39",
+    "Krishnendu Das",
+    "itskdhere",
+  ],
+
+  openGraph: {
+    title: "ARC",
+    siteName: "ARC",
+    description: "Augmented Retrieval Chatbot. Upload, Process, Ask.",
+    url: "https://anabaslabs.com",
+    images: [
+      {
+        url: "https://arc.anabaslabs.com/banner.png",
+        width: 1200,
+        height: 630,
+        alt: "ARC",
+      },
+    ],
+    type: "website",
+    locale: "en_US",
+  },
+
+  twitter: {
+    title: "ARC",
+    description: "Augmented Retrieval Chatbot. Upload, Process, Ask.",
+    images: ["https://arc.anabaslabs.com/banner.png"],
+    site: "@anabaslabs",
+    creator: "@anabaslabs",
+    card: "summary_large_image",
+  },
+
   icons: {
     icon: "/favicon.ico",
     shortcut: "/logo.png",
     apple: "/logo.png",
   },
+
   alternates: {
     canonical: "https://arc.anabaslabs.com",
   },
